@@ -10,7 +10,7 @@ namespace WinterWorkShop.Cinema.Data
     {
         public Guid Id { get; set; }
 
-        [Column("auditorium_id")]
+        [Column("auditoriumId")]
         public int AuditoriumId { get; set; }
 
         public int Row { get; set; }

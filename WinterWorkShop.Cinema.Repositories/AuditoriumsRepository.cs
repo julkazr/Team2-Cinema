@@ -25,7 +25,7 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public async Task<IEnumerable<Auditorium>> GetByAuditName(string name, int id)
         {
-            var data = await _cinemaContext.Auditoriums.Where(x => x.AuditName.Equals(name) && x.CinemaId.Equals(id)).ToListAsync();
+            var data = await _cinemaContext.Auditoriums.Where(x => x.Name.Equals(name) && x.CinemaId.Equals(id)).ToListAsync();
 
             return data;
         }

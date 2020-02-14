@@ -9,7 +9,7 @@ namespace WinterWorkShop.Cinema.Data
     public class Cinema
     {
         public int Id { get; set; }
-
+        [Column("name")]
         public string Name { get; set; }
 
         public virtual ICollection<Auditorium> Auditoriums { get; set; }
