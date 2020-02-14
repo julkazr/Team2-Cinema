@@ -15,13 +15,11 @@ namespace WinterWorkShop.Cinema.Domain.Services
     {
         private readonly IAuditoriumsRepository _auditoriumsRepository;
         private readonly ICinemasRepository _cinemasRepository;
-        private readonly ISeatsRepository _seatsRepository;
 
-        public AuditoriumService(IAuditoriumsRepository auditoriumsRepository, ICinemasRepository cinemasRepository, ISeatsRepository seatsRepository)
+        public AuditoriumService(IAuditoriumsRepository auditoriumsRepository, ICinemasRepository cinemasRepository)
         {
             _auditoriumsRepository = auditoriumsRepository;
             _cinemasRepository = cinemasRepository;
-            _seatsRepository = seatsRepository;
         }
 
         public async Task<IEnumerable<AuditoriumDomainModel>> GetAllAsync()
@@ -30,7 +28,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             if (data == null)
             {
-                return null;                
+                return null;
             }
 
             List<AuditoriumDomainModel> result = new List<AuditoriumDomainModel>();
@@ -41,7 +39,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 {
                     Id = item.Id,
                     CinemaId = item.CinemaId,
-                    Name = item.Name
+                    Name = item.AuditName
                 };
                 result.Add(model);
             }
@@ -49,7 +47,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return result;
         }
 
-        public async Task<CreateAuditoriumResultModel> CreateAuditorium(AuditoriumDomainModel domainModel,int numberOfRows, int numberOfSeats) 
+        public async Task<CreateAuditoriumResultModel> CreateAuditorium(AuditoriumDomainModel domainModel, int numberOfRows, int numberOfSeats)
         {
             var cinema = await _cinemasRepository.GetByIdAsync(domainModel.CinemaId);
             if (cinema == null)
@@ -63,7 +61,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             var auditorium = await _auditoriumsRepository.GetByAuditName(domainModel.Name, domainModel.CinemaId);
             var sameAuditoriumName = auditorium.ToList();
-            if (sameAuditoriumName != null && sameAuditoriumName.Count > 0) 
+            if (sameAuditoriumName != null && sameAuditoriumName.Count > 0)
             {
                 return new CreateAuditoriumResultModel
                 {
@@ -74,12 +72,27 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             Auditorium newAuditorium = new Auditorium
             {
-                 Name = domainModel.Name,
+                AuditName = domainModel.Name,
                 CinemaId = domainModel.CinemaId,
             };
 
-            Auditorium insertedAuditorium = _auditoriumsRepository.Insert(newAuditorium);
+            newAuditorium.Seats = new List<Seat>();
 
+            for (int i = 1; i <= numberOfRows; i++)
+            {
+                for (int j = 1; j <= numberOfSeats; j++)
+                {
+                    Seat newSeat = new Seat()
+                    {
+                        Row = i,
+                        Number = j
+                    };
+
+                    newAuditorium.Seats.Add(newSeat);
+                }
+            }
+
+            Auditorium insertedAuditorium = _auditoriumsRepository.Insert(newAuditorium);
             if (insertedAuditorium == null)
             {
                 return new CreateAuditoriumResultModel
@@ -89,57 +102,29 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 };
             }
 
-            _auditoriumsRepository.Save();
-
-            List<SeatDomainModel> seatList = new List<SeatDomainModel>();
-
-            for (int i = 1; i <= numberOfRows; i++)
-            {
-                for (int j = 1; j <= numberOfSeats; j++)
-                {
-                    Seat newSeat = new Seat()
-                    {
-                        AuditoriumId = insertedAuditorium.Id,
-                        Row = i,
-                        Number = j,
-                    };
-
-                    Seat insertedSeat = _seatsRepository.Insert(newSeat);
-
-                    if (insertedSeat == null)
-                    {
-                        return new CreateAuditoriumResultModel
-                        {
-                            IsSuccessful = false,
-                            ErrorMessage = Messages.AUDITORIUM_SEATS_CREATION_ERROR
-                        };
-                    }
-
-                    SeatDomainModel seatDomainModel = new SeatDomainModel
-                    {
-                        Id = insertedSeat.Id,
-                        AuditoriumId = insertedSeat.AuditoriumId,
-                        Row = insertedSeat.Row,
-                        Number = insertedSeat.Number,
-                    };
-
-                    seatList.Add(seatDomainModel);
-                }
-
-            }
-
-            _seatsRepository.Save();
-
             CreateAuditoriumResultModel resultModel = new CreateAuditoriumResultModel
             {
                 IsSuccessful = true,
                 ErrorMessage = null,
-                Id = insertedAuditorium.Id,
-                AuditoriumName = insertedAuditorium.Name,
-                CinemaId = insertedAuditorium.CinemaId,
-                CinemaName = cinema.Name,                
-                SeatsList = seatList,
+                Auditorium = new AuditoriumDomainModel
+                {
+                    Id = insertedAuditorium.Id,
+                    Name = insertedAuditorium.AuditName,
+                    CinemaId = insertedAuditorium.CinemaId,
+                    SeatsList = new List<SeatDomainModel>()
+                }
             };
+
+            foreach (var item in insertedAuditorium.Seats)
+            {
+                resultModel.Auditorium.SeatsList.Add(new SeatDomainModel
+                {
+                    AuditoriumId = insertedAuditorium.Id,
+                    Id = item.Id,
+                    Number = item.Number,
+                    Row = item.Row
+                });
+            }
 
             return resultModel;
         }

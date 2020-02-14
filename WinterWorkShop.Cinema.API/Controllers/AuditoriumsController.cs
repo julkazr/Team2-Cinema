@@ -42,8 +42,8 @@ namespace WinterWorkShop.Cinema.API.Controllers
             {
                 auditoriumDomainModels = new List<AuditoriumDomainModel>();
             }
-            return Ok(auditoriumDomainModels);
 
+            return Ok(auditoriumDomainModels);
         }
 
         /// <summary>
@@ -53,7 +53,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = "admin")]
-        [Route("create")]
         public async Task<ActionResult<AuditoriumDomainModel>> PostAsync(CreateAuditoriumModel createAuditoriumModel) 
         {
             if (!ModelState.IsValid)
@@ -95,7 +94,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 return BadRequest(errorResponse);
             }
             
-            return Created("auditoriums//" + createAuditoriumResultModel.Id, createAuditoriumResultModel);
+            return Created("auditoriums//" + createAuditoriumResultModel.Auditorium.Id, createAuditoriumResultModel);
         }
     }
 }
