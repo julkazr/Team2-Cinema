@@ -13,8 +13,8 @@ namespace WinterWorkShop.Cinema.Data
         [Column("cinemaId")]
         public int CinemaId { get; set; }
 
-        [Column("AuditoriumName")]
-        public string AuditName { get; set; }
+        [Column("name")]
+        public string AuditoriumName { get; set; }
 
         public virtual ICollection<Projection> Projections { get; set; }
 

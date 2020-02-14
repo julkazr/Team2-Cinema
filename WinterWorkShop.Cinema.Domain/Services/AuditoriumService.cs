@@ -41,7 +41,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 {
                     Id = item.Id,
                     CinemaId = item.CinemaId,
-                    Name = item.AuditName
+                    Name = item.AuditoriumName
                 };
                 result.Add(model);
             }
@@ -74,7 +74,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             Auditorium newAuditorium = new Auditorium
             {
-                AuditName = domainModel.Name,
+                 AuditoriumName = domainModel.Name,
                 CinemaId = domainModel.CinemaId,
             };
 
@@ -135,9 +135,9 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 IsSuccessful = true,
                 ErrorMessage = null,
                 Id = insertedAuditorium.Id,
-                AuditoriumName = insertedAuditorium.AuditName,
+                AuditoriumName = insertedAuditorium.AuditoriumName,
                 CinemaId = insertedAuditorium.CinemaId,
-                CinemaName = cinema.Name,                
+                CinemaName = cinema.CinemaName,                
                 SeatsList = seatList,
             };
 
