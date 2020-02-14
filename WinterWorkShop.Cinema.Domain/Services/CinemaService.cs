@@ -33,7 +33,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 model = new CinemaDomainModel
                 {
                     Id = item.Id,
-                    Name = item.CinemaName
+                    Name = item.Name
                 };
                 result.Add(model);
             }

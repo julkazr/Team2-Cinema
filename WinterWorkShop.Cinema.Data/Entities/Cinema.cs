@@ -10,7 +10,7 @@ namespace WinterWorkShop.Cinema.Data
     {
         public int Id { get; set; }
         [Column("name")]
-        public string CinemaName { get; set; }
+        public string Name { get; set; }
 
         public virtual ICollection<Auditorium> Auditoriums { get; set; }
     }

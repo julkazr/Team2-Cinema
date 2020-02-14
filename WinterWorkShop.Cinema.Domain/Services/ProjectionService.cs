@@ -39,7 +39,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                     AuditoriumId = item.AuditoriumId,
                     ProjectionTime = item.DateTime,
                     MovieTitle = item.Movie.Title,
-                    AditoriumName = item.Auditorium.AuditoriumName
+                    AditoriumName = item.Auditorium.Name
                 };
                 result.Add(model);
             }
