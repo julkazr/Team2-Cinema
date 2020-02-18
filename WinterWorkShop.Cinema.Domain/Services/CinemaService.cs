@@ -30,7 +30,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             CinemaDomainModel model;
             foreach (var item in data)
             {
-                model = new CinemaDomainModel
+                model = new CinemaDomainModel()
                 {
                     Id = item.Id,
                     Name = item.Name
@@ -39,6 +39,94 @@ namespace WinterWorkShop.Cinema.Domain.Services
             }
 
             return result;
+        }
+
+        public async Task<CinemaDomainModel> GetByIdAsync(int id)
+        {
+            var data = await _cinemasRepository.GetByIdAsync(id);
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            CinemaDomainModel domainModel = new CinemaDomainModel()
+            {
+                Id = data.Id,
+                Name = data.Name
+            };
+
+            return domainModel;
+        }
+
+        public async Task<CinemaDomainModel> AddCinema(CinemaDomainModel newCinema)
+        {
+            Data.Cinema cinemaToCreate = new Data.Cinema()
+            {
+                Id = newCinema.Id,
+                Name = newCinema.Name
+            };
+
+            var data = _cinemasRepository.Insert(cinemaToCreate);
+            if(data == null)
+            {
+                return null;
+            }
+
+            _cinemasRepository.Save();
+
+            CinemaDomainModel domainModel = new CinemaDomainModel()
+            {
+                Id = data.Id,
+                Name = data.Name
+            };
+
+            return domainModel;
+        }
+
+        public async Task<CinemaDomainModel> UpdateCinema(CinemaDomainModel updateCinema)
+        {
+            Data.Cinema cinema = new Data.Cinema()
+            {
+                Id = updateCinema.Id,
+                Name = updateCinema.Name
+            };
+
+            var data = _cinemasRepository.Update(cinema);
+            if(data == null)
+            {
+                return null;
+            }
+
+            _cinemasRepository.Save();
+
+            CinemaDomainModel domainModel = new CinemaDomainModel()
+            {
+                Id = data.Id,
+                Name = data.Name
+            };
+
+            return domainModel;
+        }
+
+        public async Task<CinemaDomainModel> DeleteCinema(int id)
+        {
+            var data = _cinemasRepository.Delete(id);
+
+            if(data == null)
+            {
+                return null;
+            }
+
+            _cinemasRepository.Save();
+
+            CinemaDomainModel domainModel = new CinemaDomainModel()
+            {
+                Id = data.Id,
+                Name = data.Name
+            };
+
+            return domainModel;
         }
     }
 
