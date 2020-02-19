@@ -34,7 +34,7 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<MovieDomainModel> UpdateMovie(MovieDomainModel updateMovie);
+        Task<UpdateMovieResultModel> UpdateMovie(MovieDomainModel updateMovie);
 
         /// <summary>
         /// Delete a movie by ID

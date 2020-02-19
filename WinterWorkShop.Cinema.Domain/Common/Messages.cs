@@ -37,6 +37,8 @@
         public const string MOVIE_GET_ALL_CURRENT_MOVIES_ERROR = "Error occured while getting current movies, please try again.";
         public const string MOVIE_GET_BY_ID = "Error occured while getting movie by Id, please try again.";
         public const string MOVIE_GET_ALL_MOVIES_ERROR = "Error occured while getting all movies, please try again.";
+        public const string PROJECTION_EXISTING_FOR_MOVIE_ERROR = "Projections for movies exist, movie can not be deactivated.";
+        public const string UPDATING_MOVIE_ERROR = "An error occured while updating movie, please try again.";
         #endregion
 
         #region Projections

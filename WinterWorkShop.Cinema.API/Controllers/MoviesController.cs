@@ -134,17 +134,24 @@ namespace WinterWorkShop.Cinema.API.Controllers
         [Authorize(Roles = "admin")]
         [HttpPut]
         [Route("{id}")]
-        public async Task<ActionResult> Put(Guid id, [FromBody]MovieModel movieModel)
+        public async Task<ActionResult> Put(Guid id, [FromBody]UpdateMovieModel movieModel)
         {
+            //movieModel.Id = id;
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            MovieDomainModel movieToUpdate;
-
-            movieToUpdate = await _movieService.GetMovieByIdAsync(id);
-
+            MovieDomainModel movieToUpdate = await _movieService.GetMovieByIdAsync(id);
+            movieToUpdate = new MovieDomainModel
+            {
+                Id = id,
+                Title = movieModel.Title,
+                Rating = movieModel.Rating,
+                Year = movieModel.Year,
+                Current = movieModel.Current
+            };
+            
             if (movieToUpdate == null)
             {
                 ErrorResponseModel errorResponse = new ErrorResponseModel
@@ -155,16 +162,13 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
                 return BadRequest(errorResponse);
             }
+            
 
-            movieToUpdate.Title = movieModel.Title;
-            movieToUpdate.Current = movieModel.Current;
-            movieToUpdate.Year = movieModel.Year;
-            movieToUpdate.Rating = movieModel.Rating;
+            UpdateMovieResultModel updateMovieResultModel;
 
-            MovieDomainModel movieDomainModel;
             try
             {
-                movieDomainModel = await _movieService.UpdateMovie(movieToUpdate);
+                updateMovieResultModel = await _movieService.UpdateMovie(movieToUpdate);
             }
             catch (DbUpdateException e)
             {
@@ -177,7 +181,18 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 return BadRequest(errorResponse);
             }
 
-            return Accepted("movies//" + movieDomainModel.Id, movieDomainModel);
+            if (!updateMovieResultModel.IsSuccessful)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel()
+                {
+                    ErrorMessage = updateMovieResultModel.ErrorMessage,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            return Accepted("movies//" + updateMovieResultModel.Movie.Id, updateMovieResultModel);
 
         }
 
