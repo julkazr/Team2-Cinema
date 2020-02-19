@@ -13,7 +13,7 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
         /// </summary>
         /// <param name="isCurrent"></param>
         /// <returns></returns>
-        IEnumerable<MovieDomainModel> GetAllMovies(bool? isCurrent);
+        IEnumerable<MovieDomainModel> GetAllMoviesAsync(bool? isCurrent);
 
         /// <summary>
         /// Get a movie by ID
@@ -42,5 +42,11 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
         /// <param name="id"></param>
         /// <returns></returns>
         Task<MovieDomainModel> DeleteMovie(Guid id);
+
+        /// <summary>
+        /// Gets top 10 movies by rating
+        /// </summary>
+        /// <returns></returns>
+        Task<IEnumerable<MovieDomainModel>> GetTopMoviesAsync();
     }
 }

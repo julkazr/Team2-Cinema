@@ -120,7 +120,10 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             ProjectionsController projectionsController = new ProjectionsController(_projectionService.Object);
 
             //Act
-            var result = projectionsController.PostAsync(createProjectionModel).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var result = projectionsController.PostAsync(createProjectionModel)
+                                              .ConfigureAwait(false)
+                                              .GetAwaiter()
+                                              .GetResult().Result;
             var createdResult = ((CreatedResult)result).Value;
             var projectionDomainModel = (ProjectionDomainModel)createdResult;
 
