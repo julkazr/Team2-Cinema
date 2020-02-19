@@ -39,7 +39,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             int expectedStatusCode = 200;
 
             _moviesService = new Mock<IMovieService>();
-            _moviesService.Setup(x => x.GetAllMovies(true)).Returns(responseTask);
+            _moviesService.Setup(x => x.GetAllMoviesAsync(true)).Returns(responseTask);
             MoviesController moviesController = new MoviesController(_moviesService.Object);
 
             //Act
@@ -64,7 +64,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             int expectedStatusCode = 200;
 
             _moviesService = new Mock<IMovieService>();
-            _moviesService.Setup(x => x.GetAllMovies(true)).Returns(responseTask);
+            _moviesService.Setup(x => x.GetAllMoviesAsync(true)).Returns(responseTask);
             MoviesController moviesController = new MoviesController(_moviesService.Object);
 
             //Act
@@ -125,6 +125,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
         [TestMethod]
         public void Post_Create_Throw_DbException_Movie()
         {
+            //Arrange
             string expectedMessage = "Inner exception error message.";
             int expectedStatusCode = 400;
 
@@ -171,6 +172,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
         [TestMethod]
         public void Post_With_UnValid_ModelState_Return_BadRequest()
         {
+            //Arrange
             string expectedMessage = "Invalid Model State";
             int expectedStatusCode = 400;
 
@@ -206,6 +208,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
         [TestMethod]
         public void Post_Create_WhereIsMovieNull_ErrorResponse()
         {
+            //Arrange
             int expectedStatusCode = 500;
             ErrorResponseModel errorResponse = new ErrorResponseModel
             {
