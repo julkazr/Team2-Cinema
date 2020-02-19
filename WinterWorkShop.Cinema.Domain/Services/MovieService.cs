@@ -6,6 +6,8 @@ using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
 using WinterWorkShop.Cinema.Repositories;
+using System.Linq;
+
 
 namespace WinterWorkShop.Cinema.Domain.Services
 {
@@ -18,7 +20,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             _moviesRepository = moviesRepository;
         }
 
-        public IEnumerable<MovieDomainModel> GetAllMovies(bool? isCurrent)
+        public IEnumerable<MovieDomainModel> GetAllMoviesAsync(bool? isCurrent)
         {
             var data = _moviesRepository.GetCurrentMovies();
 
@@ -150,6 +152,39 @@ namespace WinterWorkShop.Cinema.Domain.Services
             };
             
             return domainModel;
+        }
+        //*************************************************************************************
+
+        public async Task<IEnumerable<MovieDomainModel>> GetTopMoviesAsync()
+        {
+            //var data = _moviesRepository.GetCurrentMovies();
+            var data = await _moviesRepository.GetAll();
+
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            List<MovieDomainModel> result = new List<MovieDomainModel>();
+            MovieDomainModel model;
+            foreach (var item in data)
+            {
+                model = new MovieDomainModel
+                {
+                    Current = item.Current,
+                    Id = item.Id,
+                    Rating = item.Rating ?? 0,
+                    Title = item.Title,
+                    Year = item.Year
+                };
+                result.Add(model);
+            }
+
+            List<MovieDomainModel> topTenResults = result.OrderByDescending(x => x.Rating).Take(10).ToList();
+
+            return topTenResults;
+
         }
     }
 }
