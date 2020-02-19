@@ -25,7 +25,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         // i.e. try IdentityServer4
         [HttpGet]
         [Route("/get-token")]
-        public IActionResult GenerateToken(string name = "aspnetcore-workshop-demo", bool admin = true)
+        public IActionResult GenerateToken(string name = "aspnetcore-workshop-demo", bool admin = false)
         {
             var jwt = JwtTokenGenerator
                 .Generate(name, admin, _configuration["Tokens:Issuer"], _configuration["Tokens:Key"]);
