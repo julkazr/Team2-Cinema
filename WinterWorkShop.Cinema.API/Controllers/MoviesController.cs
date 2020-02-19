@@ -62,7 +62,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         {
             IEnumerable<MovieDomainModel> movieDomainModels;
 
-            movieDomainModels = _movieService.GetAllMovies(true);
+            movieDomainModels = _movieService.GetAllMoviesAsync(true);
 
             if (movieDomainModels == null)
             {
@@ -219,6 +219,28 @@ namespace WinterWorkShop.Cinema.API.Controllers
             }
 
             return Accepted("movies//" + deletedMovie.Id, deletedMovie);
+        }
+        //******************************************************************************************************************
+
+
+        /// <summary>
+        /// Gets top 10 movies by rating
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("tops")]
+        public async Task<ActionResult<IEnumerable<Movie>>> GetTops()
+        {
+            IEnumerable<MovieDomainModel> movieDomainModels;
+
+            movieDomainModels = await _movieService.GetTopMoviesAsync();
+
+            if (movieDomainModels == null)
+            {
+                movieDomainModels = new List<MovieDomainModel>();
+            }
+
+            return Ok(movieDomainModels);
         }
     }
 }
