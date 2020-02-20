@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
+using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Repositories;
 using System.Linq;
 
@@ -14,10 +15,12 @@ namespace WinterWorkShop.Cinema.Domain.Services
     public class MovieService : IMovieService
     {
         private readonly IMoviesRepository _moviesRepository;
+        private readonly IProjectionsRepository _projectionsRepository;
 
-        public MovieService(IMoviesRepository moviesRepository)
+        public MovieService(IMoviesRepository moviesRepository, IProjectionsRepository projectionsRepository)
         {
             _moviesRepository = moviesRepository;
+            _projectionsRepository = projectionsRepository;
         }
 
         public IEnumerable<MovieDomainModel> GetAllMoviesAsync(bool? isCurrent)
@@ -99,35 +102,69 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return domainModel;
         }
 
-        public async Task<MovieDomainModel> UpdateMovie(MovieDomainModel updateMovie) {
+        public async Task<UpdateMovieResultModel> UpdateMovie(MovieDomainModel updateMovie) {
 
-            Movie movie = new Movie()
+            var projectionsForMovie = _projectionsRepository.GetByMovieId(updateMovie.Id);
+            List<Projection> activeMovieProjections = new List<Projection>();
+
+            foreach (var item in projectionsForMovie)
+            {
+                if (item.DateTime >= DateTime.Now)
+                {
+                    activeMovieProjections.Add(item);
+                }
+            }
+
+            Movie movie = new Movie
             {
                 Id = updateMovie.Id,
                 Title = updateMovie.Title,
-                Current = updateMovie.Current,
                 Year = updateMovie.Year,
                 Rating = updateMovie.Rating
             };
-            
+
+            if (activeMovieProjections.Count == 0)
+            {
+                movie.Current = updateMovie.Current;
+            }
+            else
+            {
+                return new UpdateMovieResultModel
+                {
+                    IsSuccessful = false,
+                    ErrorMessage = Messages.PROJECTION_EXISTING_FOR_MOVIE_ERROR
+                };
+
+            }
+
+
             var data = _moviesRepository.Update(movie);
 
             if (data == null)
             {
-                return null;
+                return new UpdateMovieResultModel
+                {
+                    IsSuccessful = false,
+                    ErrorMessage = Messages.UPDATING_MOVIE_ERROR
+                };
             }
+
             _moviesRepository.Save();
 
-            MovieDomainModel domainModel = new MovieDomainModel()
+            UpdateMovieResultModel resultModel = new UpdateMovieResultModel
             {
-                Id = data.Id,
-                Title = data.Title,
-                Current = data.Current,
-                Year = data.Year,
-                Rating = data.Rating ?? 0
+                IsSuccessful = true,
+                ErrorMessage = null,
+                Movie = new MovieDomainModel
+                {
+                    Id = data.Id,
+                    Title = data.Title,
+                    Current = data.Current,
+                    Year = data.Year,
+                    Rating = data.Rating ?? 0
+                }
             };
-
-            return domainModel;
+            return resultModel;
         }
 
         public async Task<MovieDomainModel> DeleteMovie(Guid id)
