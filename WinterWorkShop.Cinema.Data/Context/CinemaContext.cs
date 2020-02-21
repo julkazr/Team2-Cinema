@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using WinterWorkShop.Cinema.Data.Entities;
 
 namespace WinterWorkShop.Cinema.Data
 {
@@ -13,6 +14,10 @@ namespace WinterWorkShop.Cinema.Data
         public DbSet<Cinema> Cinemas { get; set; }
         public DbSet<Auditorium> Auditoriums { get; set; }
         public DbSet<Seat> Seats { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<TagMovie> TagMovies { get; set; }
+
+
 
         public CinemaContext(DbContextOptions options)
             : base(options)
@@ -101,6 +106,48 @@ namespace WinterWorkShop.Cinema.Data
                 .HasMany(x => x.Projections)
                 .WithOne(x => x.Movie)
                 .IsRequired();
+
+            //******************************************************************
+
+            /// <summary>
+            /// Movie -> TagMovie relation
+            /// </summary>
+            /// <returns></returns>
+            modelBuilder.Entity<Movie>()
+               .HasMany(x => x.TagMovies)
+               .WithOne(x => x.Movie)
+               .IsRequired();
+
+            /// <summary>
+            /// TagMovie -> Movie relation
+            /// </summary>
+            /// <returns></returns>
+            modelBuilder.Entity<TagMovie>()
+                .HasOne(x => x.Movie)
+                .WithMany(x => x.TagMovies)
+                .HasForeignKey(x => x.MovieId)
+                .IsRequired();
+
+
+            /// <summary>
+            /// TagMovie -> Tag relation
+            /// </summary>
+            /// <returns></returns>
+            modelBuilder.Entity<TagMovie>()
+                .HasOne(x => x.Tag)
+                .WithMany(x => x.TagMovies)
+                .HasForeignKey(x => x.TagId)
+                .IsRequired();
+
+            /// <summary>
+            /// Tag -> TagMovie relation
+            /// </summary>
+            /// <returns></returns>
+            modelBuilder.Entity<Tag>()
+                .HasMany(x => x.TagMovies)
+                .WithOne(x => x.Tag)
+                .IsRequired();
+
         }
     }
 }
