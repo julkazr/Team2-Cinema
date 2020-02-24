@@ -96,5 +96,90 @@ namespace WinterWorkShop.Cinema.API.Controllers
             
             return Created("auditoriums//" + createAuditoriumResultModel.Auditorium.Id, createAuditoriumResultModel);
         }
+
+        [Authorize(Roles = "admin")]
+        [HttpPut]
+        [Route("update/{id}")]
+        public async Task<ActionResult> Put(int id, [FromBody]AuditoriumDomainModel domainModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            AuditoriumDomainModel auditoriumDomain;
+
+            auditoriumDomain = await _auditoriumService.GetByIdAsync(id);
+
+            if (auditoriumDomain == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = Messages.AUDITORIUM_DOES_NOT_EXIST,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            auditoriumDomain.Name = domainModel.Name;
+            auditoriumDomain.CinemaId = domainModel.CinemaId;
+            auditoriumDomain.SeatsList = domainModel.SeatsList;
+
+            AuditoriumDomainModel auditoriumDomainModel;
+
+            try
+            {
+                auditoriumDomainModel = await _auditoriumService.UpdateAuditorium(auditoriumDomain);
+            }
+            catch (DbUpdateException e)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = e.InnerException.Message ?? e.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            return Accepted("auditoriums//" + auditoriumDomainModel.Id, auditoriumDomainModel);
+
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpDelete]
+        [Route("delete/{id}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            AuditoriumDomainModel deletedAuditorium;
+            try
+            {
+                deletedAuditorium = await _auditoriumService.DeleteAuditorium(id);
+            }
+            catch (DbUpdateException e)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = e.InnerException.Message ?? e.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            if (deletedAuditorium == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = Messages.AUDITORIUM_DOES_NOT_EXIST,
+                    StatusCode = System.Net.HttpStatusCode.InternalServerError
+                };
+
+                return StatusCode((int)System.Net.HttpStatusCode.InternalServerError, errorResponse);
+            }
+
+            return Accepted("auditoriums//" + deletedAuditorium.Id, deletedAuditorium);
+        }
     }
 }

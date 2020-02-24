@@ -15,11 +15,13 @@ namespace WinterWorkShop.Cinema.Domain.Services
     {
         private readonly IAuditoriumsRepository _auditoriumsRepository;
         private readonly ICinemasRepository _cinemasRepository;
+        private readonly ISeatsRepository _seatsRepository;
 
-        public AuditoriumService(IAuditoriumsRepository auditoriumsRepository, ICinemasRepository cinemasRepository)
+        public AuditoriumService(IAuditoriumsRepository auditoriumsRepository, ICinemasRepository cinemasRepository, ISeatsRepository seatsRepository)
         {
             _auditoriumsRepository = auditoriumsRepository;
             _cinemasRepository = cinemasRepository;
+            _seatsRepository = seatsRepository;
         }
 
         public async Task<IEnumerable<AuditoriumDomainModel>> GetAllAsync()
@@ -126,7 +128,126 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 });
             }
 
+            _auditoriumsRepository.Save();
+
             return resultModel;
+        }
+
+        public async Task<AuditoriumDomainModel> GetByIdAsync(int id)
+        {
+            var data = await _auditoriumsRepository.GetByIdAsync(id);
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            AuditoriumDomainModel domainModel = new AuditoriumDomainModel()
+            {
+                Id = data.Id,
+                Name = data.Name,
+                CinemaId = data.CinemaId
+            };
+
+            foreach(var item in data.Seats)
+            {
+                domainModel.SeatsList.Add(new SeatDomainModel
+                {
+                    AuditoriumId = data.Id,
+                    Id = item.Id,
+                    Number = item.Number,
+                    Row = item.Row
+                });
+            }
+
+            return domainModel;
+        }
+
+        public async Task<AuditoriumDomainModel> UpdateAuditorium(AuditoriumDomainModel auditoriumDomain)
+        {
+            Auditorium auditorium = new Auditorium()
+            { 
+                Id = auditoriumDomain.Id,
+                CinemaId = auditoriumDomain.CinemaId,
+                Name = auditoriumDomain.Name
+            };
+
+            foreach (var item in auditoriumDomain.SeatsList)
+            {
+                auditorium.Seats.Add(new Seat
+                {
+                    AuditoriumId = item.AuditoriumId,
+                    Id = item.Id,
+                    Number = item.Number,
+                    Row = item.Row
+                });
+            }
+
+            var data = _auditoriumsRepository.Update(auditorium);
+            if (data == null)
+            {
+                return null;
+            }
+
+            _auditoriumsRepository.Save();
+
+            AuditoriumDomainModel domainModel = new AuditoriumDomainModel()
+            {
+                Id = data.Id,
+                Name = data.Name,
+                CinemaId = data.CinemaId
+            };
+
+
+            foreach (var item in data.Seats)
+            {
+                domainModel.SeatsList.Add(new SeatDomainModel
+                {
+                    AuditoriumId = data.Id,
+                    Id = item.Id,
+                    Number = item.Number,
+                    Row = item.Row
+                });
+            }
+
+            return domainModel;
+        }
+
+        public async Task<AuditoriumDomainModel> DeleteAuditorium(int id)
+        {
+            var data = await _auditoriumsRepository.GetByIdAsync(id);
+            List<Seat> seats = new List<Seat>();
+            List<Seat> seatsResult = new List<Seat>();
+            foreach (var item in data.Seats)
+            {
+                seats.Add(item);
+            }
+
+            for (int i = 0; i < seats.Count; i ++)
+            {
+                Seat seatsDelete = _seatsRepository.Delete(seats[i].Id);
+                seatsResult.Add(seatsDelete);
+  
+            }
+            _seatsRepository.Save();
+
+            var result = _auditoriumsRepository.Delete(id);
+
+            if (result == null)
+            {
+                return null;
+            }
+
+            _auditoriumsRepository.Save();
+
+            AuditoriumDomainModel domainModel = new AuditoriumDomainModel()
+            {
+                Id = data.Id,
+                Name = data.Name,
+                CinemaId = data.CinemaId
+            };
+
+            return domainModel;
         }
     }
 }
