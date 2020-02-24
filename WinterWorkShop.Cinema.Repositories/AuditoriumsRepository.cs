@@ -33,7 +33,9 @@ namespace WinterWorkShop.Cinema.Repositories
         public Auditorium Delete(object id)
         {
             Auditorium existing = _cinemaContext.Auditoriums.Find(id);
+            var seats = _cinemaContext.Seats.Where(x => x.AuditoriumId.Equals((int)id)).ToList();
             var result = _cinemaContext.Auditoriums.Remove(existing);
+            result.Entity.Seats = seats;
 
             return result.Entity;
         }
@@ -48,7 +50,10 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public async Task<Auditorium> GetByIdAsync(object id)
         {
-            return await _cinemaContext.Auditoriums.FindAsync(id);
+            var seats = _cinemaContext.Seats.Where(x => x.AuditoriumId.Equals((int)id)).ToList();
+            var result = await _cinemaContext.Auditoriums.FindAsync(id);
+            result.Seats = seats;
+            return result;
         }
 
         public Auditorium Insert(Auditorium obj)
