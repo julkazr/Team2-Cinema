@@ -27,10 +27,9 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public async Task<IEnumerable<Tag>> GetAll()
         {
-            //return await _cinemaContext.Movies.ToListAsync();
+            var data = await _cinemaContext.Tags.Include(x=>x.TagMovies).ToListAsync();
 
-            return await _cinemaContext.Tags.ToListAsync();
-
+            return data;
         }
 
         public Task<Tag> GetByIdAsync(object id)

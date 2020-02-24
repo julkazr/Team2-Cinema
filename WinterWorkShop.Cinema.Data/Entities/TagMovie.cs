@@ -5,12 +5,13 @@ using System.Text;
 
 namespace WinterWorkShop.Cinema.Data.Entities
 {
-    [Table("tagMovies")]
+    [Table("tagMovie")]
     public class TagMovie
     {
+        public int Id { get; set; }
         public int TagId { get; set; }
         public Guid MovieId { get; set; }
-        public Movie Movie { get; set; }
-        public Tag Tag { get; set; }
+        public virtual Movie Movie { get; set; }
+        public virtual Tag Tag { get; set; }
     }
 }

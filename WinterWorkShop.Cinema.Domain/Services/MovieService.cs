@@ -8,7 +8,8 @@ using WinterWorkShop.Cinema.Domain.Models;
 using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Repositories;
 using System.Linq;
-
+using System.Text.RegularExpressions;
+using WinterWorkShop.Cinema.Data.Entities;
 
 namespace WinterWorkShop.Cinema.Domain.Services
 {
@@ -16,11 +17,13 @@ namespace WinterWorkShop.Cinema.Domain.Services
     {
         private readonly IMoviesRepository _moviesRepository;
         private readonly IProjectionsRepository _projectionsRepository;
+        private readonly ITagRepository _tagRepository;
 
-        public MovieService(IMoviesRepository moviesRepository, IProjectionsRepository projectionsRepository)
+        public MovieService(IMoviesRepository moviesRepository, IProjectionsRepository projectionsRepository, ITagRepository tagRepository)
         {
             _moviesRepository = moviesRepository;
             _projectionsRepository = projectionsRepository;
+            _tagRepository = tagRepository;
         }
 
         public IEnumerable<MovieDomainModel> GetAllMoviesAsync(bool? isCurrent)
@@ -253,5 +256,53 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return topTenResults;
 
         }
+
+        //All movies by given tag
+        public async Task<IEnumerable<MovieDomainModel>> GetMoviesByTag(string tag)
+        {
+            //Svi tagovi
+            var allTags = await _tagRepository.GetAll();
+            if (allTags == null)
+            {
+                return null;
+            }
+
+            //Lista pogodjenih tagova
+            var listWithMatchedTag = allTags.Where(x => x.TagContent.Contains(tag, StringComparison.CurrentCultureIgnoreCase)).ToList();
+
+            //lista svih filmova po serchovanom tagu
+            List<Movie> listOfMovies = new List<Movie>();
+
+            //Popunjavanje liste filmova na osnovu pogodjenog taga
+            foreach (var matchedTag in listWithMatchedTag)
+            {
+                foreach (var item in matchedTag.TagMovies)
+                {
+                    Movie movieToAdd = await _moviesRepository.GetByIdAsync(item.MovieId);
+                    listOfMovies.Add(movieToAdd);
+                }
+            }
+
+            //Lista MovieDomainModel-a koja ce biti vracena
+            List<MovieDomainModel> result = new List<MovieDomainModel>();
+            MovieDomainModel model;
+            foreach (var item in listOfMovies)
+            {
+                model = new MovieDomainModel
+                {
+                    Current = item.Current,
+                    Id = item.Id,
+                    Rating = item.Rating ?? 0,
+                    Title = item.Title,
+                    Year = item.Year
+                };
+                result.Add(model);
+            }
+
+            return result;
+
+        }
+
+
     }
 }

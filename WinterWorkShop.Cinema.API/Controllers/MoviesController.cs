@@ -273,5 +273,23 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             return Ok(movieDomainModels);
         }
+
+        [HttpPost]
+        [Route("getByTag")]
+        public async Task<ActionResult<IEnumerable<Movie>>> GetByTAg([FromBody]string tag)
+        {
+            IEnumerable<MovieDomainModel> movieDomainModels;
+
+            movieDomainModels = await _movieService.GetMoviesByTag(tag);
+
+            if (movieDomainModels == null)
+            {
+                movieDomainModels = new List<MovieDomainModel>();
+            }
+
+            return Ok(movieDomainModels);
+        }
+
+
     }
 }
