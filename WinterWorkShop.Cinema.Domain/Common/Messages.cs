@@ -28,6 +28,11 @@
         public const string CINEMA_CREATION_ERROR = "Error occured while creating new cinema, please try again.";
         #endregion
 
+        #region Reservations
+        public const string RESERVATION_CREATION_ERROR = "Error occured while creating new reservation, please try again.";
+        public const string RESERVATION_DOES_NOT_EXIST = "Reservation does not exist.";
+        #endregion
+
         #region Movies        
         public const string MOVIE_DOES_NOT_EXIST = "Movie does not exist.";
         public const string MOVIE_PROPERTIE_TITLE_NOT_VALID = "The movie title cannot be longer than 50 characters.";
