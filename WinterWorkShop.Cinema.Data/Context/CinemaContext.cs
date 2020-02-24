@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using WinterWorkShop.Cinema.Data.Entities;
 
 namespace WinterWorkShop.Cinema.Data
 {
@@ -13,6 +14,7 @@ namespace WinterWorkShop.Cinema.Data
         public DbSet<Cinema> Cinemas { get; set; }
         public DbSet<Auditorium> Auditoriums { get; set; }
         public DbSet<Seat> Seats { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }
 
         public CinemaContext(DbContextOptions options)
             : base(options)
@@ -100,6 +102,28 @@ namespace WinterWorkShop.Cinema.Data
             modelBuilder.Entity<Movie>()
                 .HasMany(x => x.Projections)
                 .WithOne(x => x.Movie)
+                .IsRequired();
+
+            modelBuilder.Entity<Reservation>()
+                .HasOne(x => x.Projection)
+                .WithMany(x => x.Reservations)
+                .HasForeignKey(x => x.projectionId)
+                .IsRequired();
+
+            modelBuilder.Entity<Projection>()
+                .HasMany(x => x.Reservations)
+                .WithOne(x => x.Projection)
+                .IsRequired();
+
+            modelBuilder.Entity<Reservation>()
+                .HasOne(x => x.Seat)
+                .WithMany(x => x.Reservations)
+                .HasForeignKey(x => x.seatId)
+                .IsRequired();
+
+            modelBuilder.Entity<Seat>()
+                .HasMany(x => x.Reservations)
+                .WithOne(x => x.Seat)
                 .IsRequired();
         }
     }
