@@ -32,11 +32,6 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public Auditorium Delete(object id)
         {
-            //List<Auditorium> existing = _cinemaContext.Auditoriums.Include(x => x.Seats)
-            //                                                        .Where(x => x.Id.Equals((int)id)).ToList();
-            //var result = _cinemaContext.Auditoriums.Remove(existing[0]);
-
-
             Auditorium existing = _cinemaContext.Auditoriums.Find(id);
             var seats = _cinemaContext.Seats.Where(x => x.AuditoriumId.Equals((int)id)).ToList();
             var result = _cinemaContext.Auditoriums.Remove(existing);
