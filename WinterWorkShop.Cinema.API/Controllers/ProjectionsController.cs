@@ -136,5 +136,49 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             return Ok(projectionDomainModels);
         }
+
+        /// <summary>
+        /// Delete a projection by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "admin")]
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<ActionResult> Delete(Guid id)
+        {
+            ProjectionDomainModel deletedProjection;
+            try
+            {
+                deletedProjection = await _projectionService.DeleteProjection(id);
+            }
+            catch (DbUpdateException e)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = e.InnerException.Message ?? e.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            if (deletedProjection == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = Messages.PROJECTION_DELETE_ERROR,
+                    StatusCode = System.Net.HttpStatusCode.InternalServerError
+                };
+
+                return StatusCode((int)System.Net.HttpStatusCode.InternalServerError, errorResponse);
+            }
+
+            return Accepted("projections//" + deletedProjection.Id, deletedProjection);
+        }
+
+
+
+
     }
 }

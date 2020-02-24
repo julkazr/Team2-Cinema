@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
@@ -14,11 +15,13 @@ namespace WinterWorkShop.Cinema.Domain.Services
     {
         private readonly IProjectionsRepository _projectionsRepository;
         private readonly ICinemasRepository _cinemasRepository;
+        private readonly IReservationRepository _reservationRepository;
 
-        public ProjectionService(IProjectionsRepository projectionsRepository, ICinemasRepository cinemasRepository)
+        public ProjectionService(IProjectionsRepository projectionsRepository, ICinemasRepository cinemasRepository, IReservationRepository reservationRepository)
         {
             _projectionsRepository = projectionsRepository;
             _cinemasRepository = cinemasRepository;
+            _reservationRepository = reservationRepository;
         }
 
         public async Task<IEnumerable<ProjectionDomainModel>> GetAllAsync()
@@ -164,6 +167,57 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
 
             return result;
+        }
+
+
+        //DELETE PROJECTION
+        public async Task<ProjectionDomainModel> DeleteProjection(Guid id)
+        {
+
+            Projection existing = await _projectionsRepository.GetByIdWithReservationAsync(id);
+            if (existing == null)
+            {
+                //proveri sta trebad a vratis
+                return null;
+            }
+            if (existing.Reservations.Count != 0)
+            {
+                var reservationsForProjection = existing.Reservations;
+
+                foreach (var item in reservationsForProjection)
+                {
+                    var reservationDeleted = _reservationRepository.Delete(item.id);
+                    if (reservationDeleted == null)
+                    {
+                        return null;
+                    }
+                }
+                _reservationRepository.Save();
+            }
+
+            
+            //da li moze save nakon svih
+
+
+            //brise projekciju
+            var data = _projectionsRepository.Delete(existing.Id);
+
+            if (data == null)
+            {
+                return null;
+            }
+            _projectionsRepository.Save();
+
+
+            ProjectionDomainModel domainModel = new ProjectionDomainModel()
+            {
+                Id = data.Id,
+                MovieId = data.MovieId,
+                AuditoriumId = data.AuditoriumId,
+                ProjectionTime = data.DateTime
+            };
+
+            return domainModel;
         }
 
     }
