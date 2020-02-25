@@ -14,6 +14,6 @@ namespace WinterWorkShop.Cinema.API.Models
         [Required]
         public Guid seatId { get; set; }
 
-        public bool reservation { get; set; }
+        //public bool reservation { get; set; }
     }
 }

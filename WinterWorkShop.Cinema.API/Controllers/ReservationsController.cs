@@ -9,6 +9,7 @@ using WinterWorkShop.Cinema.API.Models;
 using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
+using WinterWorkShop.Cinema.Domain.Services;
 
 namespace WinterWorkShop.Cinema.API.Controllers
 {
@@ -18,10 +19,12 @@ namespace WinterWorkShop.Cinema.API.Controllers
     public class ReservationsController : ControllerBase
     {
         private readonly IReservationService _reservationService;
+        private readonly ILevi9PaymentService _levi9PaymentService;
 
-        public ReservationsController(IReservationService reservationService)
+        public ReservationsController(IReservationService reservationService, ILevi9PaymentService levi9PaymentService)
         {
             _reservationService = reservationService;
+            _levi9PaymentService = levi9PaymentService;
         }
 
         [HttpGet]
@@ -69,7 +72,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
             ReservationDomainModel domainModel = new ReservationDomainModel
             {
                 projectionId = reservationModel.projectionId,
-                reservation = reservationModel.reservation,
+                //reservation = reservationModel.reservation,
                 seatId = reservationModel.seatId
             };
 
@@ -103,5 +106,83 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             return Created("reservations//" + createReservation.id, createReservation);
         }
+
+        //****************************************************************************************
+        //RESERVATION PROCES
+
+        [Authorize(Roles = "admin")]
+        [HttpPost]
+        [Route("reserve")]
+        public async Task<ActionResult<ReservationDomainModel>> ReservationProces(ReservationProcesModel model)
+        {          
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            //provera da li su sedista slobodna
+            var reservationCheck = await _reservationService.CheckReservationForSeats(model.SeatsToReserveID);
+            if(!reservationCheck.SeatsAreFree)
+            {
+                SeatTakenErrorResponseModel errorResponse = new SeatTakenErrorResponseModel
+                {
+                    ErrorMessage = reservationCheck.InfoMessage,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest,
+                    SeatsTakenID = reservationCheck.SeatsTaken
+                };
+                return BadRequest(errorResponse);
+            }
+
+
+            //provera placanja
+            var paymentResponse = await _levi9PaymentService.MakePayment();
+            if (!paymentResponse.IsSuccess)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = paymentResponse.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+                return BadRequest(errorResponse);
+            }
+
+
+            //izvrsi rezervaciju svakog sedista
+            List<ReservationDomainModel> resultList = new List<ReservationDomainModel>();
+
+            foreach (var seatId in model.SeatsToReserveID)
+            {
+                ReservationDomainModel reservation = new ReservationDomainModel
+                {
+                    seatId = seatId,
+                    projectionId = model.ProjectionId
+                };
+
+                try
+                {
+                    var data = await _reservationService.AddReservation(reservation);
+                    if(data != null)
+                    {
+                        reservation.id = data.id;
+                    }
+                }
+                catch (DbUpdateException e)
+                {
+                    ErrorResponseModel errorResponse = new ErrorResponseModel
+                    {
+                        ErrorMessage = e.InnerException.Message ?? e.Message,
+                        StatusCode = System.Net.HttpStatusCode.BadRequest
+                    };
+
+                    return BadRequest(errorResponse);
+                }
+                resultList.Add(reservation);
+            }
+
+            //Sve proslo
+            return Created("reservations//reserve", resultList);
+        }
+
+
     }
 }

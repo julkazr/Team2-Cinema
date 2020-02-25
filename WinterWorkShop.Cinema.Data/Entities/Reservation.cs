@@ -9,7 +9,7 @@ namespace WinterWorkShop.Cinema.Data.Entities
     public class Reservation
     {
         public int id { get; set; }
-        public bool reservation { get; set; }
+        //public bool reservation { get; set; }
 
         [Column("projection_id")]
         public Guid projectionId { get; set; }
