@@ -168,7 +168,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             foreach (var seatId in listOfSeatsId)
             {
                 var reservationForGivenSeat = allReserevations.Where(x => x.seatId.Equals(seatId)).ToList();
-                if (reservationForGivenSeat != null)
+                if (reservationForGivenSeat.Count > 0)
                 {
                     result.SeatsTaken.Add(seatId);                    
                 }

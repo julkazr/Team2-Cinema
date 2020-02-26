@@ -20,10 +20,12 @@ namespace WinterWorkShop.Cinema.API.Controllers
     public class AuditoriumsController : ControllerBase
     {
         private readonly IAuditoriumService _auditoriumService;
+        private readonly IReservationService _reservationService;
 
-        public AuditoriumsController(IAuditoriumService auditoriumservice)
+        public AuditoriumsController(IAuditoriumService auditoriumservice, IReservationService reservationService)
         {
             _auditoriumService = auditoriumservice;
+            _reservationService = reservationService;
         }
 
         /// <summary>
@@ -44,6 +46,22 @@ namespace WinterWorkShop.Cinema.API.Controllers
             }
 
             return Ok(auditoriumDomainModels);
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ActionResult<AuditoriumDomainModel>> GetAsync(int id)
+        {
+            AuditoriumDomainModel auditorium;
+
+            auditorium = await _auditoriumService.GetByIdAsync(id);
+
+            if (auditorium == null)
+            {
+                return NotFound(Messages.AUDITORIUM_DOES_NOT_EXIST);
+            }
+
+            return Ok(auditorium);
         }
 
         /// <summary>
@@ -100,7 +118,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         [Authorize(Roles = "admin")]
         [HttpPut]
         [Route("update/{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody]AuditoriumDomainModel domainModel)
+        public async Task<ActionResult> Put(int id, UpdateAuditoriumModel updateAuditoriumModel)
         {
             if (!ModelState.IsValid)
             {
@@ -108,8 +126,14 @@ namespace WinterWorkShop.Cinema.API.Controllers
             }
 
             AuditoriumDomainModel auditoriumDomain;
-
             auditoriumDomain = await _auditoriumService.GetByIdAsync(id);
+            List<Guid> seatsId = new List<Guid>();
+            foreach(var item in auditoriumDomain.SeatsList)
+            {
+                seatsId.Add(item.Id);
+            }
+
+            CheckReservationForSeatsDomainModel checkReservation = await _reservationService.CheckReservationForSeats(seatsId);
 
             if (auditoriumDomain == null)
             {
@@ -122,15 +146,15 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 return BadRequest(errorResponse);
             }
 
-            auditoriumDomain.Name = domainModel.Name;
-            auditoriumDomain.CinemaId = domainModel.CinemaId;
-            auditoriumDomain.SeatsList = domainModel.SeatsList;
+            auditoriumDomain.Name = updateAuditoriumModel.Name;
+            auditoriumDomain.CinemaId = auditoriumDomain.CinemaId;
+            auditoriumDomain.SeatsList = auditoriumDomain.SeatsList;
 
             AuditoriumDomainModel auditoriumDomainModel;
 
             try
             {
-                auditoriumDomainModel = await _auditoriumService.UpdateAuditorium(auditoriumDomain);
+                auditoriumDomainModel = await _auditoriumService.UpdateAuditorium(auditoriumDomain, updateAuditoriumModel.NumberOfRows, updateAuditoriumModel.NumberOfSeats, checkReservation.SeatsAreFree);
             }
             catch (DbUpdateException e)
             {
