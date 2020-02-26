@@ -190,6 +190,54 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 row = item.Row;
             }
 
+            if (numberOfRows > row)
+            {
+                for (int i = row + 1; i <= numberOfRows; i++)
+                {
+                    for (int j = 1; j <= number; j++)
+                    {
+                        Seat seat = new Seat
+                        {
+                            Number = j,
+                            Row = i
+                        };
+                        update.Seats.Add(seat);
+                    }
+                }
+                row = numberOfRows;
+            }
+            if (numberOfRows < row)
+            {
+                List<Seat> seats = new List<Seat>();
+                if (!SeatsAreFree)
+                {
+                    return null;
+                }
+                foreach (var item in update.Seats)
+                {
+                    if (item.Row > numberOfRows)
+                    {
+                        seats.Add(item);
+                    }
+                }
+                foreach (var item in seats)
+                {
+                    update.Seats.Remove(item);
+                    Seat seat = new Seat();
+                    seat = _seatsRepository.Delete(item.Id);
+                    _seatsRepository.Save();
+                }
+                row = numberOfRows;
+            }
+
+            var data = _auditoriumsRepository.Update(update);
+            if (data == null)
+            {
+                return null;
+            }
+
+            _auditoriumsRepository.Save();
+
             if (numberOfSeats > number)
             {
                 for (int i = 1; i <= row; i++)
@@ -202,6 +250,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
                             Row = i
                         };
                         update.Seats.Add(seat);
+                        Seat newSeat = new Seat();
+                        newSeat = _seatsRepository.Insert(seat);
                     }
                 }
                 number = numberOfSeats;
@@ -228,46 +278,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 }
                 number = numberOfSeats;
             }
-            if (numberOfRows > row)
-            {
-                for(int i = row + 1; i <= numberOfRows; i ++)
-                {
-                    for(int j = 1; j <= number; j ++)
-                    {
-                        Seat seat = new Seat
-                        {
-                            Number = j,
-                            Row = i
-                        };
-                        update.Seats.Add(seat);
-                    }
-                }
-                row = numberOfRows;
-            }
-            if(numberOfRows < row)
-            {
-                List<Seat> seats = new List<Seat>();
-                if (!SeatsAreFree)
-                {
-                    return null;
-                }
-                foreach (var item in update.Seats)
-                {
-                    if (item.Row > numberOfRows)
-                    {
-                        seats.Add(item);
-                    }
-                }
-                foreach(var item in seats)
-                {
-                    update.Seats.Remove(item);
-                    Seat seat = _seatsRepository.Delete(item.Id);
-                    _seatsRepository.Save();
-                }
-                row = numberOfRows;
-            }
 
-            var data = _auditoriumsRepository.Update(update);
+            data = _auditoriumsRepository.Update(update);
             if (data == null)
             {
                 return null;
