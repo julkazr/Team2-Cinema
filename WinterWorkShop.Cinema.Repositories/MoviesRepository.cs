@@ -12,6 +12,7 @@ namespace WinterWorkShop.Cinema.Repositories
     public interface IMoviesRepository : IRepository<Movie> 
     {
         IEnumerable<Movie> GetCurrentMovies();
+        Task<IEnumerable<Movie>> GetMoviesWithTheirProjections();
     }
 
     public class MoviesRepository : IMoviesRepository
@@ -75,6 +76,15 @@ namespace WinterWorkShop.Cinema.Repositories
             _cinemaContext.Entry(obj).State = EntityState.Modified;
 
             return updatedEntry;
+        }
+
+        public async Task<IEnumerable<Movie>> GetMoviesWithTheirProjections()
+        {
+            var data = await _cinemaContext.Movies
+                                           .Include(x => x.Projections)
+                                           .ToListAsync();
+
+            return data;
         }
     }
 }

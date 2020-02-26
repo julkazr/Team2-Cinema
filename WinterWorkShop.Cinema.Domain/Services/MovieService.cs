@@ -102,6 +102,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return domainModel;
         }
 
+
+
         public async Task<MovieDomainModel> AddMovie(MovieDomainModel newMovie)
         {
             Movie movieToCreate = new Movie()
@@ -252,6 +254,76 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             return topTenResults;
 
+        }
+
+        public async Task<IEnumerable<MovieProjectionsResultModel>> GetMoviesWithTheirProjectionsAsync(int auditoriumId)
+        {
+            var data = await _moviesRepository.GetMoviesWithTheirProjections();
+
+            if(data == null)
+            {
+                return null;
+            }
+            
+            List<MovieProjectionsResultModel> result = new List<MovieProjectionsResultModel>();
+            MovieProjectionsResultModel model;
+
+            foreach (var item in data)
+            {                
+                List<Projection> listOfProjectionsForWantedAuditorium = item.Projections.Where(p => (p.AuditoriumId == auditoriumId) && (p.MovieId == item.Id)).ToList();
+
+                List<ProjectionDomainModel> projsList = new List<ProjectionDomainModel>();
+
+                foreach (var proj in listOfProjectionsForWantedAuditorium)
+                {
+
+                    if (proj.DateTime >= DateTime.Now)
+                    {
+                        ProjectionDomainModel projMod = new ProjectionDomainModel
+                        {
+                            Id = proj.Id,
+                            //AditoriumName = proj.Auditorium.Name,
+                            AuditoriumId = proj.AuditoriumId,
+                            //MovieTitle = proj.Movie.Title,
+                            MovieId = proj.MovieId,
+                            ProjectionTime = proj.DateTime
+                        };
+
+                        projsList.Add(projMod);
+                    }                
+                }                
+
+                //if()
+                model = new MovieProjectionsResultModel
+                {
+                    Movie = new MovieDomainModel
+                    {
+                        Id = item.Id,
+                        Title = item.Title,
+                        Year = item.Year,
+                        Rating = item.Rating ?? 0,
+                        Current = item.Current
+                    },
+                    Projections = projsList,
+                    IsSuccessful=true,
+                    ErrorMessage=null
+                };
+
+                result.Add(model);
+            }
+
+            List<MovieProjectionsResultModel> resList = new List<MovieProjectionsResultModel>();
+
+            foreach (var item in result)
+            {
+                if (item.Projections.Count() != 0)
+                {
+                    resList.Add(item);
+                }
+            }
+
+            
+            return resList;
         }
     }
 }
