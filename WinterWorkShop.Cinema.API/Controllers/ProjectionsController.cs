@@ -137,11 +137,52 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Ok(projectionDomainModels);
         }
 
-        /// <summary>
-        /// Delete a projection by id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        [Authorize(Roles = "admin")]
+        [HttpPut]
+        [Route("update/{id}")]
+        public async Task<ActionResult> Put(Guid id, UpdateProjectionModel updateProjectionModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            ProjectionDomainModel projectionDomain = await _projectionService.GetByIdAsync(id);
+
+            if (projectionDomain == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = Messages.PROJECTION_DOES_NOT_EXIST,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            projectionDomain.MovieId = updateProjectionModel.movieId;
+            projectionDomain.AuditoriumId = updateProjectionModel.auditoriumId;
+            projectionDomain.ProjectionTime = updateProjectionModel.projectionTime;
+            ProjectionDomainModel projectionDomainModel;
+
+            try
+            {
+                projectionDomainModel = await _projectionService.UpdateProjection(projectionDomain);
+            }
+            catch (DbUpdateException e)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = e.InnerException.Message ?? e.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            return Accepted("projections//" + projectionDomainModel.Id, projectionDomainModel);
+        }
+
         [Authorize(Roles = "admin")]
         [HttpDelete]
         [Route("{id}")]
@@ -179,6 +220,20 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
 
 
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ActionResult<ProjectionDomainModel>> GetAsync(Guid id)
+        {
+            ProjectionDomainModel projection;
+
+            projection = await _projectionService.GetByIdAsync(id);
+
+            if (projection == null)
+            {
+                return NotFound(Messages.PROJECTION_DOES_NOT_EXIST);
+            }
+            return Ok(projection);
+        }
 
     }
 }
