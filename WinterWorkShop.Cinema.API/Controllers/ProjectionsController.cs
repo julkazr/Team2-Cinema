@@ -136,5 +136,104 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             return Ok(projectionDomainModels);
         }
+
+        [Authorize(Roles = "admin")]
+        [HttpPut]
+        [Route("update/{id}")]
+        public async Task<ActionResult> Put(Guid id, UpdateProjectionModel updateProjectionModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            ProjectionDomainModel projectionDomain = await _projectionService.GetByIdAsync(id);
+
+            if (projectionDomain == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = Messages.PROJECTION_DOES_NOT_EXIST,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            projectionDomain.MovieId = updateProjectionModel.movieId;
+            projectionDomain.AuditoriumId = updateProjectionModel.auditoriumId;
+            projectionDomain.ProjectionTime = updateProjectionModel.projectionTime;
+            ProjectionDomainModel projectionDomainModel;
+
+            try
+            {
+                projectionDomainModel = await _projectionService.UpdateProjection(projectionDomain);
+            }
+            catch (DbUpdateException e)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = e.InnerException.Message ?? e.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            return Accepted("projections//" + projectionDomainModel.Id, projectionDomainModel);
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<ActionResult> Delete(Guid id)
+        {
+            ProjectionDomainModel deletedProjection;
+            try
+            {
+                deletedProjection = await _projectionService.DeleteProjection(id);
+            }
+            catch (DbUpdateException e)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = e.InnerException.Message ?? e.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            if (deletedProjection == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = Messages.PROJECTION_DELETE_ERROR,
+                    StatusCode = System.Net.HttpStatusCode.InternalServerError
+                };
+
+                return StatusCode((int)System.Net.HttpStatusCode.InternalServerError, errorResponse);
+            }
+
+            return Accepted("projections//" + deletedProjection.Id, deletedProjection);
+        }
+
+
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ActionResult<ProjectionDomainModel>> GetAsync(Guid id)
+        {
+            ProjectionDomainModel projection;
+
+            projection = await _projectionService.GetByIdAsync(id);
+
+            if (projection == null)
+            {
+                return NotFound(Messages.PROJECTION_DOES_NOT_EXIST);
+            }
+            return Ok(projection);
+        }
+
     }
 }

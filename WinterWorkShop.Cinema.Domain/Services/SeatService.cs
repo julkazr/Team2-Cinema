@@ -42,5 +42,27 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             return result;
         }
+
+        public async Task<SeatDomainModel> DeleteSeat(int id)
+        {
+            var data = _seatsRepository.Delete(id);
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            _seatsRepository.Save();
+
+            SeatDomainModel domainModel = new SeatDomainModel()
+            {
+                Id = data.Id,
+                AuditoriumId = data.AuditoriumId,
+                Number = data.Number,
+                Row = data.Row
+            };
+
+            return domainModel;
+        }
     }
 }

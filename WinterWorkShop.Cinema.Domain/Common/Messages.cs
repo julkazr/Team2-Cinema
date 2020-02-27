@@ -19,6 +19,7 @@
         public const string AUDITORIUM_SEATS_CREATION_ERROR = "Error occured while creating seats for auditorium, please try again.";
         public const string AUDITORIUM_SAME_NAME = "Cannot create new auditorium, auditorium with same name alredy exist.";
         public const string AUDITORIUM_UNVALID_CINEMAID = "Cannot create new auditorium, auditorium with given cinemaId does not exist.";
+        public const string AUDITORIUM_DOES_NOT_EXIST = "Auditorium does not exist.";
         #endregion
 
         #region Cinemas
@@ -51,6 +52,8 @@
         public const string PROJECTION_CREATION_ERROR = "Error occured while creating new projection, please try again.";
         public const string PROJECTIONS_AT_SAME_TIME = "Cannot create new projection, there are projections at same time alredy.";
         public const string PROJECTION_IN_PAST = "Projection time cannot be in past.";
+        public const string PROJECTION_DELETE_ERROR = "Error occured while deleting projection, please try again.";
+        public const string PROJECTION_DOES_NOT_EXIST = "Projection does not exist.";
         #endregion
 
         #region Seats
