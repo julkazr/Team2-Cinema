@@ -23,11 +23,8 @@ namespace WinterWorkShop.Cinema.API.Controllers
     {
         private readonly IMovieService _movieService;
 
-        //private readonly ILogger<MoviesController> _logger;
-
-        public MoviesController(/*ILogger<MoviesController> logger,*/ IMovieService movieService)
+        public MoviesController(IMovieService movieService)
         {
-            //_logger = logger;
             _movieService = movieService;
         }
 
@@ -98,7 +95,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <param name="auditoriumId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("movieprojections")]
+        [Route("movieprojections/{auditoriumId}")]
 
         public async Task<ActionResult<IEnumerable<Movie>>> GetMoviesWithTheirProjectionsAsync(int auditoriumId)
         {
@@ -106,7 +103,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             if (movieProjectionsModel == null)
             {
-                movieProjectionsModel = new List<MovieProjectionsResultModel>();
+                return BadRequest(movieProjectionsModel = new List<MovieProjectionsResultModel>());
             }
 
             return Ok(movieProjectionsModel);
@@ -183,14 +180,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
             }
 
             MovieDomainModel movieToUpdate = await _movieService.GetMovieByIdAsync(id);
-            movieToUpdate = new MovieDomainModel
-            {
-                Id = id,
-                Title = movieModel.Title,
-                Rating = movieModel.Rating,
-                Year = movieModel.Year,
-                Current = movieModel.Current
-            };
             
             if (movieToUpdate == null)
             {
@@ -202,7 +191,16 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
                 return BadRequest(errorResponse);
             }
-            
+
+            movieToUpdate = new MovieDomainModel
+            {
+                Id = id,
+                Title = movieModel.Title,
+                Rating = movieModel.Rating,
+                Year = movieModel.Year,
+                Current = movieModel.Current
+            };
+
 
             UpdateMovieResultModel updateMovieResultModel;
 
@@ -292,7 +290,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             if (movieDomainModels == null)
             {
-                movieDomainModels = new List<MovieDomainModel>();
+                return BadRequest(movieDomainModels = new List<MovieDomainModel>());
             }
 
             return Ok(movieDomainModels);
@@ -308,7 +306,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             if (movieDomainModels == null)
             {
-                movieDomainModels = new List<MovieDomainModel>();
+                return BadRequest(movieDomainModels = new List<MovieDomainModel>());
             }
 
             return Ok(movieDomainModels);
