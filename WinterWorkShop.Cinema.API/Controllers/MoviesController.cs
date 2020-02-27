@@ -72,6 +72,10 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Ok(movieDomainModels);
         }
 
+        /// <summary>
+        /// Gets all movies from db
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("all")]
         public async Task<ActionResult<IEnumerable<Movie>>> GetAllAsync()
@@ -86,6 +90,26 @@ namespace WinterWorkShop.Cinema.API.Controllers
             }
 
             return Ok(movieDomainModels);
+        }
+
+        /// <summary>
+        /// Gets movies with their projections for selected auditorium
+        /// </summary>
+        /// <param name="auditoriumId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("movieprojections")]
+
+        public async Task<ActionResult<IEnumerable<Movie>>> GetMoviesWithTheirProjectionsAsync(int auditoriumId)
+        {
+            IEnumerable<MovieProjectionsResultModel> movieProjectionsModel = await _movieService.GetMoviesWithTheirProjectionsAsync(auditoriumId);
+
+            if (movieProjectionsModel == null)
+            {
+                movieProjectionsModel = new List<MovieProjectionsResultModel>();
+            }
+
+            return Ok(movieProjectionsModel);
         }
 
         /// <summary>
