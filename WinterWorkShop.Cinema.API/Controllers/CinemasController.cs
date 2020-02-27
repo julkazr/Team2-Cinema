@@ -47,7 +47,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<CinemaDomainModel>> GetAsync(int id)
+        public async Task<ActionResult<CinemaDomainModel>> GetByIdAsync(int id)
         {
             CinemaDomainModel cinema;
 

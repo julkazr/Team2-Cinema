@@ -146,7 +146,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
             {
                 Id = data.Id,
                 Name = data.Name,
-                CinemaId = data.CinemaId
+                CinemaId = data.CinemaId,
+                SeatsList = new List<SeatDomainModel>()
             };
 
             foreach(var item in data.Seats)
@@ -163,27 +164,122 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return domainModel;
         }
 
-        public async Task<AuditoriumDomainModel> UpdateAuditorium(AuditoriumDomainModel auditoriumDomain)
+
+
+        public async Task<AuditoriumDomainModel> UpdateAuditorium(AuditoriumDomainModel auditoriumDomain, int numberOfRows, int numberOfSeats, bool SeatsAreFree)
         {
             Auditorium auditorium = new Auditorium()
             { 
                 Id = auditoriumDomain.Id,
                 CinemaId = auditoriumDomain.CinemaId,
-                Name = auditoriumDomain.Name
+                Name = auditoriumDomain.Name,
+                Seats = new List<Seat>()
             };
 
-            foreach (var item in auditoriumDomain.SeatsList)
+            Auditorium update = new Auditorium();
+            update.Seats = new List<Seat>();
+            update = await _auditoriumsRepository.GetByIdAsync(auditorium.Id);
+            update.Name = auditorium.Name;
+            int number = new int();
+            int row = new int();
+            List<Seat> newSeats = new List<Seat>();
+            foreach (var item in update.Seats)
             {
-                auditorium.Seats.Add(new Seat
-                {
-                    AuditoriumId = item.AuditoriumId,
-                    Id = item.Id,
-                    Number = item.Number,
-                    Row = item.Row
-                });
+                newSeats.Add(item);
+                number = item.Number;
+                row = item.Row;
             }
 
-            var data = _auditoriumsRepository.Update(auditorium);
+            if (numberOfRows > row)
+            {
+                for (int i = row + 1; i <= numberOfRows; i++)
+                {
+                    for (int j = 1; j <= number; j++)
+                    {
+                        Seat seat = new Seat
+                        {
+                            Number = j,
+                            Row = i
+                        };
+                        update.Seats.Add(seat);
+                    }
+                }
+                row = numberOfRows;
+            }
+            if (numberOfRows < row)
+            {
+                List<Seat> seats = new List<Seat>();
+                if (!SeatsAreFree)
+                {
+                    return null;
+                }
+                foreach (var item in update.Seats)
+                {
+                    if (item.Row > numberOfRows)
+                    {
+                        seats.Add(item);
+                    }
+                }
+                foreach (var item in seats)
+                {
+                    update.Seats.Remove(item);
+                    Seat seat = new Seat();
+                    seat = _seatsRepository.Delete(item.Id);
+                    _seatsRepository.Save();
+                }
+                row = numberOfRows;
+            }
+
+            var data = _auditoriumsRepository.Update(update);
+            if (data == null)
+            {
+                return null;
+            }
+
+            _auditoriumsRepository.Save();
+
+            if (numberOfSeats > number)
+            {
+                for (int i = 1; i <= row; i++)
+                {
+                    for (int j = number + 1; j <= numberOfSeats; j++)
+                    {
+                        Seat seat = new Seat
+                        {
+                            Number = j,
+                            Row = i
+                        };
+                        update.Seats.Add(seat);
+                        Seat newSeat = new Seat();
+                        newSeat = _seatsRepository.Insert(seat);
+                    }
+                }
+                number = numberOfSeats;
+            }
+            if (numberOfSeats < number)
+            {
+                if (!SeatsAreFree)
+                {
+                    return null;
+                }
+                List<Seat> seats = new List<Seat>();
+                foreach (var item in update.Seats)
+                {
+                    if (item.Number > numberOfSeats)
+                    {
+                        seats.Add(item);
+                    }
+                }
+                foreach(var item in seats)
+                {
+                    update.Seats.Remove(item);
+                    Seat seat = _seatsRepository.Delete(item.Id);
+                    _seatsRepository.Save();
+                }
+                number = numberOfSeats;
+            }
+
+            data = _auditoriumsRepository.Update(update);
             if (data == null)
             {
                 return null;
@@ -197,17 +293,18 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 Name = data.Name,
                 CinemaId = data.CinemaId
             };
+            domainModel.SeatsList = new List<SeatDomainModel>();
 
-
-            foreach (var item in data.Seats)
+            foreach(var item in data.Seats)
             {
-                domainModel.SeatsList.Add(new SeatDomainModel
+                SeatDomainModel seat = new SeatDomainModel
                 {
-                    AuditoriumId = data.Id,
+                    AuditoriumId = item.AuditoriumId,
                     Id = item.Id,
                     Number = item.Number,
                     Row = item.Row
-                });
+                };
+                domainModel.SeatsList.Add(seat);
             }
 
             return domainModel;
