@@ -49,7 +49,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return result;
         }
 
-        public async Task<CreateAuditoriumResultModel> CreateAuditorium(AuditoriumDomainModel domainModel, int numberOfRows, int numberOfSeats)
+        public async Task<CreateAuditoriumResultModel> CreateAuditorium(AuditoriumDomainModel domainModel, int numberOfRows, int numberOfSeatsPerRow)
         {
             var cinema = await _cinemasRepository.GetByIdAsync(domainModel.CinemaId);
             if (cinema == null)
@@ -82,7 +82,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             for (int i = 1; i <= numberOfRows; i++)
             {
-                for (int j = 1; j <= numberOfSeats; j++)
+                for (int j = 1; j <= numberOfSeatsPerRow; j++)
                 {
                     Seat newSeat = new Seat()
                     {

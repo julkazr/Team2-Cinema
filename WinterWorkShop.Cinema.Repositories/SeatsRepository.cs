@@ -8,7 +8,10 @@ using WinterWorkShop.Cinema.Data;
 
 namespace WinterWorkShop.Cinema.Repositories
 {
-    public interface ISeatsRepository : IRepository<Seat> { }
+    public interface ISeatsRepository : IRepository<Seat> 
+    {
+        Task<Seat> GetByGuid(Guid id);
+    }
     public class SeatsRepository : ISeatsRepository
     {
         private CinemaContext _cinemaContext;
@@ -31,6 +34,16 @@ namespace WinterWorkShop.Cinema.Repositories
             var data = await _cinemaContext.Seats.ToListAsync();
 
             return data;
+        }
+
+
+        public async Task<Seat> GetByGuid(Guid id)
+        {
+            var data = await _cinemaContext.Seats.SingleOrDefaultAsync(x => x.Id.Equals(id));
+
+
+            return data;
+
         }
 
         public async Task<Seat> GetByIdAsync(object id)

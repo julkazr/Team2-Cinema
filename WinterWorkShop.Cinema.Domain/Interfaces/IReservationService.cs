@@ -18,5 +18,7 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
 
         Task<ReservationDomainModel> DeleteReservation(int id);
         Task<CheckReservationForSeatsDomainModel> CheckReservationForSeats(List<Guid> listOfSeatsId);
+        Task<CheckSeatsPositionDomainModel> CheckPositionBeforeReservation(List<Guid> listOfSeatsId);
+        //object CheckPositionBeforeReservation();
     }
 }

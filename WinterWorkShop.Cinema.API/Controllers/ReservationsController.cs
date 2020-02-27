@@ -183,6 +183,55 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Created("reservations//reserve", resultList);
         }
 
+        //CHECK FOR SEEAT POSITIONS BEFORE RESERVATION
+
+        [Authorize(Roles = "admin")]
+        [HttpPost]
+        [Route("check")]
+        public async Task<ActionResult<CheckSeatsPositionDomainModel>> CheckSeatPositions(CheckSeetPositionsModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (model.listOfSeatsId.Count < 1 || model.listOfSeatsId == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = "List of id-seats is not valid",
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+                return BadRequest(errorResponse);
+            }
+
+
+            CheckSeatsPositionDomainModel data;
+            
+            data= await _reservationService.CheckPositionBeforeReservation(model.listOfSeatsId);
+            if (data == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = "Something went wrong in service",
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+                return BadRequest(errorResponse);
+            }
+
+            if (!data.CheckSucceed)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = data.InfoMessage,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+                return BadRequest(errorResponse);
+            }
+            
+
+            return Ok(data);
+        }
 
     }
 }
