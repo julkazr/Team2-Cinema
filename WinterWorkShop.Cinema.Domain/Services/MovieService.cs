@@ -229,7 +229,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
         public async Task<IEnumerable<MovieDomainModel>> GetTopMoviesAsync()
         {
-            //var data = _moviesRepository.GetCurrentMovies();
             var data = await _moviesRepository.GetAll();
 
 
@@ -296,7 +295,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
                     }                
                 }                
 
-                //if()
                 model = new MovieProjectionsResultModel
                 {
                     Movie = new MovieDomainModel
