@@ -18,7 +18,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
         private List<CinemaDomainModel> _cinemaDomainModels;
         private Data.Cinema _cinema;
         private List<Data.Cinema> _cinemas;
-        //CinemaService cinemaService = new CinemaService(_mockCinemaRepository.Object);
+
         [TestInitialize]
         public void TestInitialize()
         {
