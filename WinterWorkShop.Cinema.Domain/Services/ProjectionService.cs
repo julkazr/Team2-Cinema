@@ -14,13 +14,11 @@ namespace WinterWorkShop.Cinema.Domain.Services
     public class ProjectionService : IProjectionService
     {
         private readonly IProjectionsRepository _projectionsRepository;
-        private readonly ICinemasRepository _cinemasRepository;
         private readonly IReservationRepository _reservationRepository;
 
-        public ProjectionService(IProjectionsRepository projectionsRepository, ICinemasRepository cinemasRepository, IReservationRepository reservationRepository)
+        public ProjectionService(IProjectionsRepository projectionsRepository, IReservationRepository reservationRepository)
         {
             _projectionsRepository = projectionsRepository;
-            _cinemasRepository = cinemasRepository;
             _reservationRepository = reservationRepository;
         }
 
