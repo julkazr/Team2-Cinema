@@ -345,7 +345,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
         }
 
         [TestMethod]
-        public void ProjectionService_Delete_GetReturnNull_ReturnDeletedProjection()
+        public void ProjectionService_Delete_GetReturnNull_ReturnNull()
         {
             //Arange
             Guid id = _projection.Id;
@@ -361,6 +361,23 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
             //Assert
             Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DbUpdateException))]
+        public void Projectionervice_DeleteProjection_When_Deleting_Non_Existing_Movie()
+        {
+            // Arrange
+            Guid id = Guid.NewGuid();
+            _mockProjectionsRepository = new Mock<IProjectionsRepository>();
+            var responseTask = Task.FromResult(_projection);
+            _mockProjectionsRepository.Setup(x => x.GetByIdWithReservationAsync(It.IsAny<Guid>())).Returns(responseTask);
+            _mockProjectionsRepository.Setup(x => x.Delete(It.IsAny<Guid>())).Throws(new DbUpdateException());
+            _mockProjectionsRepository.Setup(x => x.Save());
+            ProjectionService projectionsController = new ProjectionService(_mockProjectionsRepository.Object, _mockReservationRepository.Object);
+
+            //Act
+            var resultAction = projectionsController.DeleteProjection(id).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         [TestMethod]
@@ -431,6 +448,21 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
             //Assert
             Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DbUpdateException))]
+        public void Projectionervice_UpdateProjection_When_Updating_Non_Existing_Movie()
+        {
+            // Arrange
+            Guid id = Guid.NewGuid();
+            _mockProjectionsRepository = new Mock<IProjectionsRepository>();
+            _mockProjectionsRepository.Setup(x => x.Update(It.IsAny<Projection>())).Throws(new DbUpdateException());
+            _mockProjectionsRepository.Setup(x => x.Save());
+            ProjectionService projectionsController = new ProjectionService(_mockProjectionsRepository.Object, _mockReservationRepository.Object);
+
+            //Act
+            var resultAction = projectionsController.UpdateProjection(_projectionDomainModel).ConfigureAwait(false).GetAwaiter().GetResult();
         }
     }
 }

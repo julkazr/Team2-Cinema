@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -149,6 +150,21 @@ namespace WinterWorkShop.Cinema.Tests.Services
         }
 
         [TestMethod]
+        [ExpectedException(typeof(DbUpdateException))]
+        public void CinemaService_AddCinema_When_Inserting_Non_Existing_Cinema()
+        {
+            // Arrange
+            Guid id = Guid.NewGuid();
+            _mockCinemaRepository = new Mock<ICinemasRepository>();
+            _mockCinemaRepository.Setup(x => x.Insert(It.IsAny<Data.Cinema>())).Throws(new DbUpdateException());
+            _mockCinemaRepository.Setup(x => x.Save());
+            CinemaService cinemaService = new CinemaService(_mockCinemaRepository.Object);
+
+            //Act
+            var resultAction = cinemaService.AddCinema(_cinemaDomainModel).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+        [TestMethod]
         public void CinemaService_UpdateCinema_ReturnUpdatedCinema()
         {
             //Arrange
@@ -181,6 +197,21 @@ namespace WinterWorkShop.Cinema.Tests.Services
         }
 
         [TestMethod]
+        [ExpectedException(typeof(DbUpdateException))]
+        public void CinemaService_UpdateCinema_When_Updating_Non_Existing_Cinema()
+        {
+            // Arrange
+            Guid id = Guid.NewGuid();
+            _mockCinemaRepository = new Mock<ICinemasRepository>();
+            _mockCinemaRepository.Setup(x => x.Update(It.IsAny<Data.Cinema>())).Throws(new DbUpdateException());
+            _mockCinemaRepository.Setup(x => x.Save());
+            CinemaService cinemaService = new CinemaService(_mockCinemaRepository.Object);
+
+            //Act
+            var resultAction = cinemaService.UpdateCinema(_cinemaDomainModel).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+        [TestMethod]
         public void CinemaService_DeleteCinema_ReturnDeletedCinema()
         {
             //Arrange
@@ -210,6 +241,21 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
             //Assert
             Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DbUpdateException))]
+        public void CinemaService_DeleteCinema_When_Deleting_Non_Existing_Cinema()
+        {
+            // Arrange
+            int id = 1;
+            _mockCinemaRepository = new Mock<ICinemasRepository>();
+            _mockCinemaRepository.Setup(x => x.Delete(It.IsAny<int>())).Throws(new DbUpdateException());
+            _mockCinemaRepository.Setup(x => x.Save());
+            CinemaService cinemaService = new CinemaService(_mockCinemaRepository.Object);
+
+            //Act
+            var resultAction = cinemaService.DeleteCinema(id).ConfigureAwait(false).GetAwaiter().GetResult();
         }
     }
 }
