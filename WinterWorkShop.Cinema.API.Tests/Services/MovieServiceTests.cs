@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -224,6 +225,22 @@ namespace WinterWorkShop.Cinema.Tests.Services
         }
 
         [TestMethod]
+        [ExpectedException(typeof(DbUpdateException))]
+        public void MovieService_AddMovie_When_Inserting_Non_Existing_Movie()
+        {
+            // Arrange
+            List<Projection> projectionsModelsList = new List<Projection>();
+
+            _moviesRepository = new Mock<IMoviesRepository>();
+            _moviesRepository.Setup(x => x.Insert(It.IsAny<Movie>())).Throws(new DbUpdateException());
+            _moviesRepository.Setup(x => x.Save());
+            MovieService movieService = new MovieService(_moviesRepository.Object, _projectionsRepository.Object, _tagRepository.Object);
+
+            //Act
+            var resultAction = movieService.AddMovie(_movieDomainModel).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+        [TestMethod]
         public void MovieService_UpdateMovie_ReturnUpdatedMovie()
         {
             //Arrange
@@ -289,6 +306,22 @@ namespace WinterWorkShop.Cinema.Tests.Services
         }
 
         [TestMethod]
+        [ExpectedException(typeof(DbUpdateException))]
+        public void MovieService_UpdateMovie_When_Updating_Non_Existing_Movie()
+        {
+            // Arrange
+            List<Projection> projectionsModelsList = new List<Projection>();
+
+            _moviesRepository = new Mock<IMoviesRepository>();
+            _moviesRepository.Setup(x => x.Update(It.IsAny<Movie>())).Throws(new DbUpdateException());
+            _moviesRepository.Setup(x => x.Save());
+            MovieService movieService = new MovieService(_moviesRepository.Object, _projectionsRepository.Object, _tagRepository.Object);
+
+            //Act
+            var resultAction = movieService.UpdateMovie(_movieDomainModel).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+        [TestMethod]
         public void MovieService_DeleteMovie_ReturnDeletedMovie()
         {
             //Arrange
@@ -318,6 +351,23 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
             //Assert
             Assert.IsNull(result);
+        }
+
+
+        [TestMethod]
+        [ExpectedException(typeof(DbUpdateException))]
+        public void MovieService_DeleteMovie_When_Deleting_Non_Existing_Movie()
+        {
+            // Arrange
+            List<Projection> projectionsModelsList = new List<Projection>();
+            Guid id = Guid.NewGuid();
+            _moviesRepository = new Mock<IMoviesRepository>();
+            _moviesRepository.Setup(x => x.Delete(It.IsAny<Guid>())).Throws(new DbUpdateException());
+            _moviesRepository.Setup(x => x.Save());
+            MovieService movieService = new MovieService(_moviesRepository.Object, _projectionsRepository.Object, _tagRepository.Object);
+
+            //Act
+            var resultAction = movieService.DeleteMovie(id).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         [TestMethod]
