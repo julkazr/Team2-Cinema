@@ -72,7 +72,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
             ReservationDomainModel domainModel = new ReservationDomainModel
             {
                 projectionId = reservationModel.projectionId,
-                //reservation = reservationModel.reservation,
                 seatId = reservationModel.seatId,
                 userId = reservationModel.userId
             };
@@ -211,7 +210,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             CheckSeatsPositionDomainModel data;
             
-            data= await _reservationService.CheckPositionBeforeReservation(model.listOfSeatsId);
+            data = await _reservationService.CheckPositionBeforeReservation(model.listOfSeatsId);
             if (data == null)
             {
                 ErrorResponseModel errorResponse = new ErrorResponseModel
