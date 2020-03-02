@@ -235,5 +235,25 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Ok(projection);
         }
 
+        /// <summary>
+        /// Gets projection with auditorium for projection
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getwithauditorium/{id}")]
+        public async Task<ActionResult<ProjectionWithAuditoriumResultModel>> GetProjectionWithAuditorium(Guid id)
+        {
+            ProjectionWithAuditoriumResultModel projection;
+            projection = await _projectionService.GetProjectionWithAuditorium(id);
+
+            if (projection == null)
+            {
+                return NotFound(Messages.PROJECTION_DOES_NOT_EXIST);
+            }
+
+            return Ok(projection);
+        }
+
     }
 }

@@ -61,6 +61,7 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
         /// <summary>
         /// Gets list of movies with their projections
         /// </summary>
+        /// <param name="auditoriumId"></param>
         /// <returns></returns>
         Task<IEnumerable<MovieProjectionsResultModel>> GetMoviesWithTheirProjectionsAsync(int auditoriumId);
 
