@@ -73,7 +73,8 @@ namespace WinterWorkShop.Cinema.API.Controllers
             {
                 projectionId = reservationModel.projectionId,
                 //reservation = reservationModel.reservation,
-                seatId = reservationModel.seatId
+                seatId = reservationModel.seatId,
+                userId = reservationModel.userId
             };
 
             ReservationDomainModel createReservation;
@@ -155,7 +156,8 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 ReservationDomainModel reservation = new ReservationDomainModel
                 {
                     seatId = seatId,
-                    projectionId = model.ProjectionId
+                    projectionId = model.ProjectionId,
+                    userId = model.UserId
                 };
 
                 try
@@ -164,6 +166,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
                     if(data != null)
                     {
                         reservation.id = data.id;
+                        
                     }
                 }
                 catch (DbUpdateException e)

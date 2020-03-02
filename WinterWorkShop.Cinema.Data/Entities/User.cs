@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using WinterWorkShop.Cinema.Data.Entities;
 
 namespace WinterWorkShop.Cinema.Data
 {
@@ -19,5 +20,7 @@ namespace WinterWorkShop.Cinema.Data
 
         [Column("isAdmin")]
         public bool IsAdmin { get; set; }
+
+        public virtual ICollection<Reservation> Reservations { get; set; }
     }
 }

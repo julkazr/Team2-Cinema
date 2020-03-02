@@ -13,5 +13,6 @@ namespace WinterWorkShop.Cinema.Domain.Models
         public Guid projectionId { get; set; }
 
         //public bool reservation { get; set; }
+        public Guid userId { get; set; }
     }
 }
