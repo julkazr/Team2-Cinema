@@ -28,7 +28,7 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public async Task<IEnumerable<Reservation>> GetAll()
         {
-            var data = await _cinemaContext.Reservations.ToListAsync();
+            var data = await _cinemaContext.Reservations.Include(x => x.User).ToListAsync();
 
             return data;
         }

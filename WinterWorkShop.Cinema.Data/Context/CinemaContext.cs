@@ -171,6 +171,28 @@ namespace WinterWorkShop.Cinema.Data
                 .WithOne(x => x.Tag)
                 .IsRequired();
 
+            //modelBuilder.Entity<Reservation>()
+            //   .HasOne(x => x.Seat)
+            //   .WithMany(x => x.Reservations)
+            //   .HasForeignKey(x => x.seatId)
+            //   .IsRequired();
+
+            //modelBuilder.Entity<Seat>()
+            //    .HasMany(x => x.Reservations)
+            //    .WithOne(x => x.Seat)
+            //    .IsRequired();
+
+            modelBuilder.Entity<Reservation>()
+               .HasOne(x => x.User)
+               .WithMany(x => x.Reservations)
+               .HasForeignKey(x => x.userId)
+               .IsRequired();
+
+            modelBuilder.Entity<User>()
+                .HasMany(x => x.Reservations)
+                .WithOne(x => x.User)
+                .IsRequired();
+
         }
     }
 }

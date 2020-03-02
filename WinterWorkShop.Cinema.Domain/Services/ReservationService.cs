@@ -42,7 +42,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
                     id = item.id,
                     projectionId = item.projectionId,
                     //reservation = item.reservation,
-                    seatId = item.seatId
+                    seatId = item.seatId,
+                    userId = item.userId
                 };
                 result.Add(model);
             }
@@ -65,6 +66,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 projectionId = data.projectionId,
                 seatId = data.seatId,
                 //reservation = data.reservation
+                userId = data.userId
             };
 
             return reservationDomainModel;
@@ -78,6 +80,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 projectionId = newReservation.projectionId,
                 seatId = newReservation.seatId,
                 //reservation = newReservation.reservation
+                userId = newReservation.userId
             };
 
             var data = _reservationRepository.Insert(reservationToCreate);
@@ -95,6 +98,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 projectionId = data.projectionId,
                 seatId = data.seatId,
                 //reservation = data.reservation
+                userId = data.userId
             };
 
             return domainModel;
@@ -108,6 +112,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 projectionId = updateReservation.projectionId,
                 seatId = updateReservation.seatId,
                 //reservation = updateReservation.reservation
+                userId = updateReservation.userId
             };
 
             var data = _reservationRepository.Update(reservationToUpdate);
@@ -125,6 +130,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 projectionId = data.projectionId,
                 seatId = data.seatId,
                 //reservation = data.reservation
+                userId = data.userId
             };
 
             return domainModel;
@@ -146,7 +152,9 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 id = data.id,
                 projectionId = data.projectionId,
                 //reservation = data.reservation,
-                seatId = data.seatId
+                seatId = data.seatId,
+                userId = data.userId
+                
             };
 
             return domainModel;
