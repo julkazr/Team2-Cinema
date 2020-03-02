@@ -270,5 +270,35 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return domainModel;
         }
 
+        //Get all taken seets for auditorium
+        public async Task<IEnumerable<SeatDomainModel>> GetReserverdSeetsForProjection(Guid projectionId)
+        {
+            List<SeatDomainModel> listOfReservedSeats = new List<SeatDomainModel>();
+            //_reservationRepository
+
+            var data = await _projectionsRepository.GetByIdWithReservationsAsync(projectionId);
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            var reservationsForSeletedProjection = data.Reservations;
+            foreach (var reservation in reservationsForSeletedProjection)
+            {
+                SeatDomainModel seatDomainModel = new SeatDomainModel
+                {
+                    Id = reservation.Seat.Id,
+                    AuditoriumId = reservation.Seat.AuditoriumId,
+                    Row = reservation.Seat.Row,
+                    Number = reservation.Seat.Number
+                };
+                listOfReservedSeats.Add(seatDomainModel);
+            }
+
+            return listOfReservedSeats;
+        }
+
+
     }
 }

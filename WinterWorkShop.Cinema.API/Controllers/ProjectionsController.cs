@@ -235,5 +235,23 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Ok(projection);
         }
 
+
+        [HttpGet]
+        [Route("reservedseats/{projectionId}")]
+        public async Task<ActionResult<IEnumerable<SeatDomainModel>>> GetAllReservedSeats(Guid projectionId)
+        {
+            IEnumerable<SeatDomainModel> seatDomainModels;
+
+            var reservedSeats = await _projectionService.GetReserverdSeetsForProjection(projectionId);
+
+            if (reservedSeats == null)
+            {
+                reservedSeats = new List<SeatDomainModel>();
+            }
+
+            return Ok(reservedSeats);
+        }
+
+
     }
 }
