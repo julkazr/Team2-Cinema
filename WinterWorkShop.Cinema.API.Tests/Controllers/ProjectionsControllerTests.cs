@@ -628,6 +628,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
         [TestMethod]
         public void GetById_GetReturnNull_Return_NotFound()
         {
+            //Arrange
             Guid id = Guid.NewGuid();
             int expectedStatusCode = 404;
             string expectedMessages = "Projection does not exist.";
@@ -647,6 +648,63 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.IsInstanceOfType(result, typeof(ObjectResult));
             Assert.AreEqual(expectedStatusCode, ((ObjectResult)result).StatusCode);
             Assert.AreEqual(expectedMessages, resultvalue);
+        }
+
+        [TestMethod]
+        public void ProjectionsController_GetAllReservad_ReturnOk()
+        {
+            //Arrange
+            int expectedResultCount = 1;
+            int expectedStatusCode = 200;
+            SeatDomainModel seat = new SeatDomainModel
+            {
+                Id = Guid.NewGuid(),
+                AuditoriumId = 1,
+                Number = 1,
+                Row = 1
+            };
+            List<SeatDomainModel> seatDomainModels = new List<SeatDomainModel>();
+            seatDomainModels.Add(seat);
+            IEnumerable<SeatDomainModel> seats = seatDomainModels;
+            Task<IEnumerable<SeatDomainModel>> responseTask = Task.FromResult(seats);
+            _projectionService = new Mock<IProjectionService>();
+            _projectionService.Setup(x => x.GetReserverdSeetsForProjection(It.IsAny<Guid>())).Returns(responseTask);
+            ProjectionsController projectionsController = new ProjectionsController(_projectionService.Object);
+
+            //Act
+            var actionResult = projectionsController.GetAllReservedSeats(Guid.NewGuid()).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var resultList = ((OkObjectResult)actionResult).Value;
+            var movieDomainModelResultList = (List<SeatDomainModel>)resultList;
+
+            //Assert
+            Assert.IsNotNull(movieDomainModelResultList);
+            Assert.AreEqual(expectedResultCount, movieDomainModelResultList.Count);
+            Assert.IsInstanceOfType(actionResult, typeof(OkObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((OkObjectResult)actionResult).StatusCode);
+        }
+
+        [TestMethod]
+        public void ProjectionsController_GetAllReservadReturnNull_ReturnNewList()
+        {
+            //Arrange
+            int expectedResultCount = 0;
+            int expectedStatusCode = 200;
+            IEnumerable<SeatDomainModel> seats = null;
+            Task<IEnumerable<SeatDomainModel>> responseTask = Task.FromResult(seats);
+            _projectionService = new Mock<IProjectionService>();
+            _projectionService.Setup(x => x.GetReserverdSeetsForProjection(It.IsAny<Guid>())).Returns(responseTask);
+            ProjectionsController projectionsController = new ProjectionsController(_projectionService.Object);
+
+            //Act
+            var actionResult = projectionsController.GetAllReservedSeats(Guid.NewGuid()).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var resultList = ((OkObjectResult)actionResult).Value;
+            var movieDomainModelResultList = (List<SeatDomainModel>)resultList;
+
+            //Assert
+            Assert.IsNotNull(movieDomainModelResultList);
+            Assert.AreEqual(expectedResultCount, movieDomainModelResultList.Count);
+            Assert.IsInstanceOfType(actionResult, typeof(OkObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((OkObjectResult)actionResult).StatusCode);
         }
     }
 }
