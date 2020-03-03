@@ -20,6 +20,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
     {
         private Mock<IReservationService> _reservationService;
         private Mock<ILevi9PaymentService> _levi9PaymentService;
+        private Mock<IUserService> _userService;
 
         ReservationDomainModel reservationDomainModel;
         ReservationModel reservationModel;
@@ -69,6 +70,15 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
                 CheckSucceed = true,
                 InfoMessage = "You passed only one seet"
             };
+            UserDomainModel userDomainModel = new UserDomainModel
+            {
+                bonus = 1,
+                Id = Guid.NewGuid(),
+                FirstName = "fN",
+                IsAdmin = true,
+                LastName = "lN",
+                UserName = "uN"
+            };
 
             PaymentResponse paymentResponse = new PaymentResponse
             {
@@ -78,12 +88,14 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
 
             _reservationService = new Mock<IReservationService>();
             _levi9PaymentService = new Mock<ILevi9PaymentService>();
+            _userService = new Mock<IUserService>();
             _reservationService.Setup(x => x.GetAllAsync()).Returns(responseTask);
             _reservationService.Setup(x => x.GetByIdAsync(It.IsAny<int>())).Returns(Task.FromResult(reservationDomainModel));
             _reservationService.Setup(x => x.AddReservation(It.IsAny<ReservationDomainModel>())).Returns(Task.FromResult(reservationDomainModel));
-            _reservationService.Setup(x => x.CheckReservationForSeats(It.IsAny<List<Guid>>())).Returns(Task.FromResult(checkReservation));
+            _reservationService.Setup(x => x.CheckReservationForSeatsForProjection(It.IsAny<List<Guid>>(), It.IsAny<Guid>())).Returns(Task.FromResult(checkReservation));
             _reservationService.Setup(x => x.CheckPositionBeforeReservation(It.IsAny<List<Guid>>())).Returns(Task.FromResult(model));
             _levi9PaymentService.Setup(x => x.MakePayment()).Returns(responsePayment);
+            _userService.Setup(x => x.IncreaseBonus(It.IsAny<Guid>(), It.IsAny<int>())).Returns(Task.FromResult(userDomainModel));
         }
 
         [TestMethod]
@@ -92,7 +104,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             //Arrange
             int expectedCount = 1;
             int expectedCode = 200;
-            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object);
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
 
             //Act
             var actionResult = reservationsController.getAsync().ConfigureAwait(false).GetAwaiter().GetResult().Result;
@@ -116,7 +128,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             IEnumerable<ReservationDomainModel> domainModels = null;
             Task<IEnumerable<ReservationDomainModel>> responseTask = Task.FromResult(domainModels);
             _reservationService.Setup(x => x.GetAllAsync()).Returns(responseTask);
-            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object);
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
 
             //Act
             var actionResult = reservationsController.getAsync().ConfigureAwait(false).GetAwaiter().GetResult().Result;
@@ -136,7 +148,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             //Arrange
             int id = 1;
             int expectedCode = 200;
-            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object);
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
 
             //Act
             var actionResult = reservationsController.getByIdAsync(id).ConfigureAwait(false).GetAwaiter().GetResult().Result;
@@ -158,7 +170,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             int expectedCode = 404;
             string expectedMessage = Messages.RESERVATION_DOES_NOT_EXIST;
             _reservationService.Setup(x => x.GetByIdAsync(It.IsAny<int>())).Returns(Task.FromResult((ReservationDomainModel)null));
-            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object);
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
 
             //Act
             var actionResult = reservationsController.getByIdAsync(id).ConfigureAwait(false).GetAwaiter().GetResult().Result;
@@ -176,7 +188,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
         {
             //Arrange
             int expectedCode = 201;
-            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object);
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
 
             //Act
             var actionResult = reservationsController.Post(reservationModel).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -197,7 +209,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             int expectedCode = 500;
             string expectedMessages = Messages.RESERVATION_CREATION_ERROR;
             _reservationService.Setup(x => x.AddReservation(It.IsAny<ReservationDomainModel>())).Returns(Task.FromResult((ReservationDomainModel)null));
-            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object);
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
 
             //Act
             var actionResult = reservationsController.Post(reservationModel).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -218,7 +230,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             string expectedMessage = "Invalid Model State";
             int expectedStatusCode = 400;
             _reservationService = new Mock<IReservationService>();
-            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object);
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
             reservationsController.ModelState.AddModelError("key", "Invalid Model State");
 
             //Act
@@ -244,7 +256,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Exception exception = new Exception("Inner exception error message.");
             DbUpdateException dbUpdateException = new DbUpdateException("Error.", exception);
             _reservationService.Setup(x => x.AddReservation(It.IsAny<ReservationDomainModel>())).Throws(dbUpdateException);
-            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object);
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
 
             //Act
             var result = reservationsController.Post(reservationModel).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -265,7 +277,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             //Arrange
             int expectedCode = 201;
             int expectedCount = 1;
-            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object);
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
 
             //Act
             var actionResult = reservationsController.ReservationProces(reservationProces).ConfigureAwait(false).GetAwaiter().GetResult().Result;
@@ -286,7 +298,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             //Arrange
             string expectedMessage = "Invalid Model State";
             int expectedStatusCode = 400;
-            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object);
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
             reservationsController.ModelState.AddModelError("key", "Invalid Model State");
 
             //Act
@@ -314,8 +326,8 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
                 SeatsAreFree = false,
                 InfoMessage = "Some of seats are already reserved"
             };
-            _reservationService.Setup(x => x.CheckReservationForSeats(It.IsAny<List<Guid>>())).Returns(Task.FromResult(checkReservation));
-            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object);
+            _reservationService.Setup(x => x.CheckReservationForSeatsForProjection(It.IsAny<List<Guid>>(), It.IsAny<Guid>())).Returns(Task.FromResult(checkReservation));
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
 
             //Act
             var actionResult = reservationsController.ReservationProces(reservationProces).ConfigureAwait(false).GetAwaiter().GetResult().Result;
@@ -342,7 +354,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             };
             Task<PaymentResponse> responsePayment = Task.FromResult(paymentResponse);
             _levi9PaymentService.Setup(x => x.MakePayment()).Returns(responsePayment);
-            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object);
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
 
             //Act
             var actionResult = reservationsController.ReservationProces(reservationProces).ConfigureAwait(false).GetAwaiter().GetResult().Result;
@@ -365,7 +377,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Exception exception = new Exception("Inner exception error message.");
             DbUpdateException dbUpdateException = new DbUpdateException("Error.", exception);
             _reservationService.Setup(x => x.AddReservation(It.IsAny<ReservationDomainModel>())).Throws(dbUpdateException);
-            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object);
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
 
             //Act
             var result = reservationsController.Post(reservationModel).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -385,7 +397,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
         {
             //Arrange 
             int expectedCode = 200;
-            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object);
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
 
             //Act
             var actionResult = reservationsController.CheckSeatPositions(check).ConfigureAwait(false).GetAwaiter().GetResult().Result;
@@ -404,7 +416,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             //Arrange
             string expectedMessage = "Invalid Model State";
             int expectedStatusCode = 400;
-            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object);
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
             reservationsController.ModelState.AddModelError("key", "Invalid Model State");
 
             //Act
@@ -431,7 +443,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             {
                 listOfSeatsId = new List<Guid>()
             };
-            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object);
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
 
             //Act
             var actionResult = reservationsController.CheckSeatPositions(check).ConfigureAwait(false).GetAwaiter().GetResult().Result;
@@ -453,7 +465,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             string expectedMessage = "Something went wrong in service";
             CheckSeatsPositionDomainModel model = null;
             _reservationService.Setup(x => x.CheckPositionBeforeReservation(It.IsAny<List<Guid>>())).Returns(Task.FromResult(model));
-            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object);
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
 
             //Act
             var actionResult = reservationsController.CheckSeatPositions(check).ConfigureAwait(false).GetAwaiter().GetResult().Result;
@@ -479,7 +491,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
                 InfoMessage = "Seets are not next to each other and exceeding the row"
             };
             _reservationService.Setup(x => x.CheckPositionBeforeReservation(It.IsAny<List<Guid>>())).Returns(Task.FromResult(model));
-            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object);
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
 
             //Act
             var actionResult = reservationsController.CheckSeatPositions(check).ConfigureAwait(false).GetAwaiter().GetResult().Result;
