@@ -19,10 +19,12 @@ namespace WinterWorkShop.Cinema.API.Controllers
     public class CinemasController : ControllerBase
     {
         private readonly ICinemaService _cinemaService;
+        private readonly IAuditoriumService _auditoriumService;
 
-        public CinemasController(ICinemaService cinemaService)
+        public CinemasController(ICinemaService cinemaService, IAuditoriumService auditoriumService)
         {
             _cinemaService = cinemaService;
+            _auditoriumService = auditoriumService;
         }
 
         /// <summary>
@@ -189,5 +191,95 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             return Accepted("cinemas//" + deletedCinema.Id, deletedCinema);
         }
+
+        //**********************************************************************************
+        //CREATE CINEMA WITH AUDITORIUM AND HIS SEATS
+
+
+        [Authorize(Roles = "admin")]
+        [HttpPost]
+        [Route("createwithauditorium")]
+        public async Task<ActionResult> PostCreateCinemaWithAuditorium([FromBody]CreateCinemaWithAuditoriumModel cinemaModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            CinemaDomainModel domainModel = new CinemaDomainModel
+            {
+                Name = cinemaModel.cinemaName
+            };
+
+            CinemaDomainModel createdCinema;
+            AuditoriumDomainModel createAuditorium;
+
+            try
+            {
+                createdCinema = await _cinemaService.AddCinema(domainModel);
+            }
+            catch (DbUpdateException e)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = e.InnerException.Message ?? e.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            if (createdCinema == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = Messages.CINEMA_CREATION_ERROR,
+                    StatusCode = System.Net.HttpStatusCode.InternalServerError
+                };
+
+                return StatusCode((int)System.Net.HttpStatusCode.InternalServerError, errorResponse);
+            }
+
+            //CREATE AUDITORIUM FOR JUST CREATED CINEMA
+
+            AuditoriumDomainModel auditoriumToCreate = new AuditoriumDomainModel
+            {
+                CinemaId = createdCinema.Id,
+                Name = cinemaModel.auditName
+            };
+
+            CreateAuditoriumResultModel createAuditoriumResult;
+
+            try
+            {
+                createAuditoriumResult = await _auditoriumService.CreateAuditorium(auditoriumToCreate, cinemaModel.seatRows, cinemaModel.numberOfSeats);
+            }
+            catch (DbUpdateException e)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = e.InnerException.Message ?? e.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            if (!createAuditoriumResult.IsSuccessful)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel()
+                {
+                    ErrorMessage = createAuditoriumResult.ErrorMessage,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            return Created("cinemas//" + createdCinema.Id, createdCinema);
+        }
+
+
+
     }
 }
