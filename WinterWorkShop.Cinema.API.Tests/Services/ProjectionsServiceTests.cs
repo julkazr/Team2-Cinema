@@ -31,9 +31,18 @@ namespace WinterWorkShop.Cinema.Tests.Services
         [TestInitialize]
         public void TestInitialize()
         {
+            Seat seat = new Seat
+            {
+                Id = Guid.NewGuid(),
+                AuditoriumId = 1,
+                Number = 1,
+                Row = 1
+            };
             Reservation reservation = new Reservation
             {
-                id = 1
+                id = 1,
+                Seat = seat,
+                seatId = seat.Id
             };
             List<Reservation> reservations = new List<Reservation>();
             reservations.Add(reservation);
@@ -84,6 +93,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
             _mockProjectionsRepository = new Mock<IProjectionsRepository>();
             _mockProjectionsRepository.Setup(x => x.GetAll()).Returns(responseTask);
+            _mockProjectionsRepository.Setup(x => x.GetByIdWithReservationsAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_projection));
             _mockReservationRepository = new Mock<IReservationRepository>();
             _mockReservationRepository.Setup(x => x.Delete(It.IsAny<int>())).Returns(_reservation);
         }
@@ -463,6 +473,39 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
             //Act
             var resultAction = projectionsController.UpdateProjection(_projectionDomainModel).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+        [TestMethod]
+        public void ProjectionService_GetReserved_ReturnListReserved()
+        {
+            //Arrange
+            Guid id = _projection.Id;
+            int expectedCount = 1;
+            ProjectionService projectionsController = new ProjectionService(_mockProjectionsRepository.Object, _mockReservationRepository.Object);
+
+            //Act
+            var actionResult = projectionsController.GetReserverdSeetsForProjection(id).ConfigureAwait(false).GetAwaiter().GetResult();
+            var result = (List<SeatDomainModel>)actionResult;
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expectedCount, result.Count);
+            Assert.IsInstanceOfType(result[0], typeof(SeatDomainModel));
+        }
+
+        [TestMethod]
+        public void ProjectionService_GetReservedReturnNull_ReturnNull()
+        {
+            //Arrange
+            Guid id = _projection.Id;
+            _mockProjectionsRepository.Setup(x => x.GetByIdWithReservationsAsync(It.IsAny<Guid>())).Returns(Task.FromResult((Projection)null));
+            ProjectionService projectionsController = new ProjectionService(_mockProjectionsRepository.Object, _mockReservationRepository.Object);
+
+            //Act
+            var actionResult = projectionsController.GetReserverdSeetsForProjection(id).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            //Assert
+            Assert.IsNull(actionResult);
         }
     }
 }
