@@ -20,11 +20,13 @@ namespace WinterWorkShop.Cinema.API.Controllers
     {
         private readonly IReservationService _reservationService;
         private readonly ILevi9PaymentService _levi9PaymentService;
+        private readonly IUserService _userService;
 
-        public ReservationsController(IReservationService reservationService, ILevi9PaymentService levi9PaymentService)
+        public ReservationsController(IReservationService reservationService, ILevi9PaymentService levi9PaymentService, IUserService userService)
         {
             _reservationService = reservationService;
             _levi9PaymentService = levi9PaymentService;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -121,7 +123,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
             }
 
             //provera da li su sedista slobodna
-            var reservationCheck = await _reservationService.CheckReservationForSeats(model.SeatsToReserveID);
+            var reservationCheck = await _reservationService.CheckReservationForSeatsForProjection(model.SeatsToReserveID, model.ProjectionId);
             if(!reservationCheck.SeatsAreFree)
             {
                 SeatTakenErrorResponseModel errorResponse = new SeatTakenErrorResponseModel
@@ -141,6 +143,17 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 ErrorResponseModel errorResponse = new ErrorResponseModel
                 {
                     ErrorMessage = paymentResponse.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+                return BadRequest(errorResponse);
+            }//ako je placanje uspesno:
+
+            var userAfterBonusChange = _userService.IncreaseBonus(model.UserId);
+            if(userAfterBonusChange == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = "Bonus failed to increase",
                     StatusCode = System.Net.HttpStatusCode.BadRequest
                 };
                 return BadRequest(errorResponse);

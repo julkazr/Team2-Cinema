@@ -37,6 +37,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                     LastName = item.LastName,
                     UserName = item.UserName,
                     IsAdmin = item.IsAdmin,
+                    bonus = item.bonus ?? 0
                 };
                 result.Add(model);
             }
@@ -60,6 +61,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 LastName = data.LastName,
                 UserName = data.UserName,
                 IsAdmin = data.IsAdmin,
+                bonus = data.bonus ?? 0
             };
 
             return domainModel;
@@ -81,9 +83,42 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 LastName = data.LastName,
                 UserName = data.UserName,
                 IsAdmin = data.IsAdmin,
+                bonus = data.bonus ?? 0
             };
 
             return domainModel;
         }
+
+        public async Task<UserDomainModel> IncreaseBonus(Guid id, int bonusIncrease=1)
+        {
+            var data = await _usersRepository.GetByIdAsync(id);
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            if(data.bonus == null)
+            {
+                data.bonus = 0;
+            }
+
+            data.bonus += bonusIncrease;
+            var userAfterUpdate =  _usersRepository.Update(data);
+
+            UserDomainModel domainModel = new UserDomainModel
+            {
+                Id = userAfterUpdate.Id,
+                FirstName = userAfterUpdate.FirstName,
+                LastName = userAfterUpdate.LastName,
+                UserName = userAfterUpdate.UserName,
+                IsAdmin = userAfterUpdate.IsAdmin,
+                bonus = userAfterUpdate.bonus ?? 0
+            };
+
+            return domainModel;
+        }
+
+
     }
 }
