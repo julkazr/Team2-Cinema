@@ -197,6 +197,47 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return result;
 
         }
+
+        //Provera da li su sedista vece rezervisana
+        public async Task<CheckReservationForSeatsDomainModel> CheckReservationForSeatsForProjection(List<Guid> listOfSeatsId, Guid projectionId)
+        {
+            CheckReservationForSeatsDomainModel result = new CheckReservationForSeatsDomainModel();
+            result.SeatsTaken = new List<Guid>();
+            //.Where(x => x.projectionId.Equals(projectionId))
+
+            var allReserevations = await _reservationRepository.GetAll();
+            var allReserevationsForProjection = allReserevations.Where(x => x.projectionId.Equals(projectionId));
+
+            //provera da li uopste ima rezervacija
+            if (allReserevationsForProjection.Count() == 0)
+            {
+                result.SeatsAreFree = true;
+                result.InfoMessage = "There are no reservations";
+                return result;
+            }
+
+            //provera da li su sedista zauzeta
+            foreach (var seatId in listOfSeatsId)
+            {
+                var reservationForGivenSeat = allReserevationsForProjection.Where(x => x.seatId.Equals(seatId)).ToList();
+                if (reservationForGivenSeat.Count > 0)
+                {
+                    result.SeatsTaken.Add(seatId);
+                }
+            }
+            if (result.SeatsTaken.Count > 0)
+            {
+                result.SeatsAreFree = false;
+                result.InfoMessage = "Some of seats are already reserved";
+                return result;
+            }
+
+
+            result.SeatsAreFree = true;
+            result.InfoMessage = "Seats are free to reserve";
+            return result;
+
+        }
         //****************************************************************************
 
 
