@@ -62,7 +62,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             }
 
             var auditorium = await _auditoriumsRepository.GetByAuditName(domainModel.Name, domainModel.CinemaId);
-            var sameAuditoriumName = auditorium.ToList();
+            var sameAuditoriumName = auditorium.ToList() ?? new List<Auditorium>();
             if (sameAuditoriumName != null && sameAuditoriumName.Count > 0)
             {
                 return new CreateAuditoriumResultModel
