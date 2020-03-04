@@ -40,7 +40,7 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public async Task<IEnumerable<Movie>> GetAll()
         {
-            return await _cinemaContext.Movies.ToListAsync();
+            return await _cinemaContext.Movies.ToListAsync(); 
         }
 
         public async Task<Movie> GetByIdAsync(object id)

@@ -317,7 +317,6 @@ namespace WinterWorkShop.Cinema.Tests.Services
             Assert.IsInstanceOfType(result, typeof(AuditoriumDomainModel));
         }
 
-
         [TestMethod]
         public void auditoriumService_UpdateReturnNull_ReturnReturnNull()
         {

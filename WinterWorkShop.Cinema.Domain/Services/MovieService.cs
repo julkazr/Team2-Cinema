@@ -54,8 +54,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
         }
 
-
-
         public async Task<IEnumerable<MovieDomainModel>> GetAllMoviesAsync()
         {
             var data = await _moviesRepository.GetAll();
@@ -105,8 +103,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return domainModel;
         }
 
-
-
         public async Task<MovieDomainModel> AddMovie(MovieDomainModel newMovie)
         {
             Movie movieToCreate = new Movie()
@@ -114,7 +110,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 Title = newMovie.Title,
                 Current = newMovie.Current,
                 Year = newMovie.Year,
-                Rating = newMovie.Rating
+                Rating = newMovie.Rating,
+                Oscar = newMovie.Oscar
             };
 
             var data = _moviesRepository.Insert(movieToCreate);
@@ -131,7 +128,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 Title = data.Title,
                 Current = data.Current,
                 Year = data.Year,
-                Rating = data.Rating ?? 0
+                Rating = data.Rating ?? 0,
+                Oscar = data.Oscar ?? false
             };
 
             return domainModel;
@@ -155,7 +153,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 Id = updateMovie.Id,
                 Title = updateMovie.Title,
                 Year = updateMovie.Year,
-                Rating = updateMovie.Rating
+                Rating = updateMovie.Rating,
+                Oscar = updateMovie.Oscar
             };
 
             if (activeMovieProjections.Count == 0)
@@ -196,7 +195,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
                     Title = data.Title,
                     Current = data.Current,
                     Year = data.Year,
-                    Rating = data.Rating ?? 0
+                    Rating = data.Rating ?? 0,
+                    Oscar = data.Oscar ?? false
                 }
             };
             return resultModel;
@@ -255,6 +255,55 @@ namespace WinterWorkShop.Cinema.Domain.Services
             List<MovieDomainModel> topTenResults = result.OrderByDescending(x => x.Rating).Take(10).ToList();
 
             return topTenResults;
+
+        }
+
+        public async Task<IEnumerable<MovieDomainModel>> GetTopMoviesAsync(int year)
+        {
+            var data = await _moviesRepository.GetAll();
+
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            List<MovieDomainModel> result = new List<MovieDomainModel>();
+            MovieDomainModel model;
+            foreach (var item in data)
+            {
+                model = new MovieDomainModel
+                {
+                    Current = item.Current,
+                    Id = item.Id,
+                    Rating = item.Rating ?? 0,
+                    Title = item.Title,
+                    Year = item.Year,
+                    Oscar = item.Oscar ?? false
+                };
+                result.Add(model);
+            }
+
+            List<MovieDomainModel> topTenResults = result.Where(x => x.Year.Equals(year)).OrderByDescending(x => x.Rating).Take(11).ToList();
+
+            for(int i = 0; i < 10; i ++)
+            {
+                for(int j = i + 1; j < 10; j ++)
+                {
+                    if(topTenResults[i].Rating == topTenResults[j].Rating && topTenResults[j].Oscar && !topTenResults[i].Oscar)
+                    {
+                        var s = topTenResults[i];
+                        topTenResults[i] = topTenResults[j];
+                        topTenResults[j] = s;
+                    }
+                }
+            }
+
+            List<MovieDomainModel> resultTop = new List<MovieDomainModel>();
+
+            resultTop = topTenResults.Take(10).ToList();
+
+            return resultTop;
 
         }
 
