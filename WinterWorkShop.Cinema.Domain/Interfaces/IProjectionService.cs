@@ -14,6 +14,7 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
         Task<ProjectionDomainModel> DeleteProjection(Guid id);
         Task<ProjectionDomainModel> GetByIdAsync(Guid id);
         Task<ProjectionDomainModel> UpdateProjection(ProjectionDomainModel updateProjection);
+        Task<IEnumerable<SeatDomainModel>> GetReserverdSeetsForProjection(Guid projectionId);
         /// <summary>
         /// Gets projection with auditorium for that projection
         /// </summary>

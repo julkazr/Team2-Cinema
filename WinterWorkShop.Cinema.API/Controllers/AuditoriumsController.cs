@@ -127,14 +127,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             AuditoriumDomainModel auditoriumDomain;
             auditoriumDomain = await _auditoriumService.GetByIdAsync(id);
-            List<Guid> seatsId = new List<Guid>();
-            foreach(var item in auditoriumDomain.SeatsList)
-            {
-                seatsId.Add(item.Id);
-            }
-
-            CheckReservationForSeatsDomainModel checkReservation = await _reservationService.CheckReservationForSeats(seatsId);
-
             if (auditoriumDomain == null)
             {
                 ErrorResponseModel errorResponse = new ErrorResponseModel
@@ -145,6 +137,13 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
                 return BadRequest(errorResponse);
             }
+            List<Guid> seatsId = new List<Guid>();
+            foreach(var item in auditoriumDomain.SeatsList)
+            {
+                seatsId.Add(item.Id);
+            }
+
+            CheckReservationForSeatsDomainModel checkReservation = await _reservationService.CheckReservationForSeats(seatsId);
 
             auditoriumDomain.Name = updateAuditoriumModel.Name;
             auditoriumDomain.CinemaId = auditoriumDomain.CinemaId;

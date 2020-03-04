@@ -27,5 +27,7 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
         /// <param name="username"></param>
         /// <returns>User</returns>
         Task<UserDomainModel> GetUserByUserName(string username);
+        Task<UserDomainModel> IncreaseBonus(Guid id, int bonusIncrease=1);
+
     }
 }
