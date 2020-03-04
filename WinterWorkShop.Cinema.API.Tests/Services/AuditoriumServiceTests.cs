@@ -341,6 +341,32 @@ namespace WinterWorkShop.Cinema.Tests.Services
         }
 
         [TestMethod]
+        [ExpectedException(typeof(DbUpdateException))]
+        public void auditoriumService_Update_When_Update_Non_Existing_Auditorium()
+        {
+            //Arrange
+            auditoriumDomainModel = new AuditoriumDomainModel
+            {
+                CinemaId = auditorium.CinemaId,
+                Id = auditorium.Id,
+                Name = auditorium.Name,
+                SeatsList = new List<SeatDomainModel>()
+            };
+            SeatDomainModel seatDomain = new SeatDomainModel
+            {
+                AuditoriumId = auditorium.Id,
+                Id = seat.Id,
+                Number = 1,
+                Row = 1
+            };
+            auditoriumDomainModel.SeatsList.Add(seatDomain);
+            _auditoriumsRepository.Setup(x => x.Update(It.IsAny<Auditorium>())).Throws(new DbUpdateException());
+
+            //Act
+            var result = auditoriumService.UpdateAuditorium(auditoriumDomainModel, 1, 1, true).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+        [TestMethod]
         public void auditoriumService_Delete_returnDeletedAuditorium()
         {
             //Arrange
@@ -367,6 +393,18 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
             //Assert
             Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DbUpdateException))]
+        public void auditoriumService_Delete_When_Delete_Non_Existing_Auditorium()
+        {
+            //Arrange
+            int id = 1;
+            _auditoriumsRepository.Setup(x => x.Delete(It.IsAny<int>())).Throws(new DbUpdateException());
+
+            //Act
+            var result = auditoriumService.DeleteAuditorium(id).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
     }
