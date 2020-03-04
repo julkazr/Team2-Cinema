@@ -148,7 +148,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 return BadRequest(errorResponse);
             }//ako je placanje uspesno:
 
-            var userAfterBonusChange = _userService.IncreaseBonus(model.UserId);
+            var userAfterBonusChange = await _userService.IncreaseBonus(model.UserId);
             if(userAfterBonusChange == null)
             {
                 ErrorResponseModel errorResponse = new ErrorResponseModel
