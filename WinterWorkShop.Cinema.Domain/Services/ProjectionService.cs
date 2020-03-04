@@ -283,7 +283,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             foreach (var seat in projectionWithAuditorium.Auditorium.Seats)
             {
-                if(seat.Row > maxByRow.Row)
+                if (seat.Row > maxByRow.Row)
                 {
                     maxByRow = seat;
                     maxRow = maxByRow.Row;
@@ -305,7 +305,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                     Id = projectionWithAuditorium.Id,
                     AditoriumName = projectionWithAuditorium.Auditorium.Name,
                     AuditoriumId = projectionWithAuditorium.AuditoriumId,
-                    
+
                     MovieId = projectionWithAuditorium.MovieId,
                     MovieTitle = projectionWithAuditorium.Movie.Title,
                     ProjectionTime = projectionWithAuditorium.DateTime
@@ -313,6 +313,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 AuditoriumRowNumber = maxRow,
                 AuditoriumSeatNumber = maxNum
             };
+            return projModel;
+        }
 
         //Get all taken seets for auditorium
         public async Task<IEnumerable<SeatDomainModel>> GetReserverdSeetsForProjection(Guid projectionId)
