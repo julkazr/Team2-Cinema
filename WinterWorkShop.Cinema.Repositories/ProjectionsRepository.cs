@@ -15,6 +15,7 @@ namespace WinterWorkShop.Cinema.Repositories
         IEnumerable<Projection> GetByMovieId(Guid movieId);
         Task<Projection> GetByIdWithReservationAsync(object id);
         Task<Projection> GetByIdWithReservationsAsync(object id);
+        Task<Projection> GetByIdWithAuditoriumIncluded(Guid id);
     }
 
     public class ProjectionsRepository : IProjectionsRepository
@@ -105,6 +106,17 @@ namespace WinterWorkShop.Cinema.Repositories
             var projectionsData = _cinemaContext.Projections.Where(x => x.MovieId == movieId);
 
             return projectionsData;
+        }
+
+        public async Task<Projection> GetByIdWithAuditoriumIncluded(Guid id)
+        {
+            Guid enteredId = new Guid(id.ToString());
+            var data = await _cinemaContext.Projections
+                                           .Include(p => p.Auditorium)
+                                           .Include(x => x.Movie)
+                                           .Include(x => x.Auditorium.Seats)
+                                           .SingleOrDefaultAsync(p => p.Id == id);
+            return data;
         }
     }
 }

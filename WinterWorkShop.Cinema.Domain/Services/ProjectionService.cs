@@ -15,11 +15,13 @@ namespace WinterWorkShop.Cinema.Domain.Services
     {
         private readonly IProjectionsRepository _projectionsRepository;
         private readonly IReservationRepository _reservationRepository;
+        private readonly ISeatsRepository _seatsRepository;
 
-        public ProjectionService(IProjectionsRepository projectionsRepository, IReservationRepository reservationRepository)
+        public ProjectionService(IProjectionsRepository projectionsRepository, IReservationRepository reservationRepository, ISeatsRepository seatsRepository)
         {
             _projectionsRepository = projectionsRepository;
             _reservationRepository = reservationRepository;
+            _seatsRepository = seatsRepository;
         }
 
         public async Task<IEnumerable<ProjectionDomainModel>> GetAllAsync()
@@ -268,6 +270,66 @@ namespace WinterWorkShop.Cinema.Domain.Services
             };
 
             return domainModel;
+        }
+
+        public async Task<ProjectionWithAuditoriumResultModel> GetProjectionWithAuditorium(Guid id)
+        {
+            var projectionWithAuditorium = await _projectionsRepository.GetByIdWithAuditoriumIncluded(id);
+            //var seatList = _seatsRepository.GetByAuditoriumId(projectionWithAuditorium.AuditoriumId);
+            var maxRow = 0;
+            var maxNum = 0;
+            Seat maxByNum = projectionWithAuditorium.Auditorium.Seats.First();
+            Seat maxByRow = projectionWithAuditorium.Auditorium.Seats.First();
+            SeatDomainModel seatForAuditorium;
+            var seats = new List<SeatDomainModel>();
+
+            foreach (var seat in projectionWithAuditorium.Auditorium.Seats)
+            {
+                if (seat.Row > maxByRow.Row)
+                {
+                    maxByRow = seat;
+                    maxRow = maxByRow.Row;
+                }
+
+                if (seat.Number > maxByNum.Number)
+                {
+                    maxByNum = seat;
+                    maxNum = maxByNum.Number;
+                }
+
+
+                seatForAuditorium = new SeatDomainModel
+                {
+                    Id = seat.Id,
+                    Number = seat.Number,
+                    Row = seat.Row
+                };
+                seats.Add(seatForAuditorium);
+            } 
+
+            ProjectionWithAuditoriumResultModel projModel = new ProjectionWithAuditoriumResultModel
+            {
+                IsSuccessful = true,
+                ErrorMessage = null,
+                Projection = new ProjectionDomainModel
+                {
+                    Id = projectionWithAuditorium.Id,
+                    AditoriumName = projectionWithAuditorium.Auditorium.Name,
+                    AuditoriumId = projectionWithAuditorium.AuditoriumId,
+
+                    MovieId = projectionWithAuditorium.MovieId,
+                    MovieTitle = projectionWithAuditorium.Movie.Title,
+                    ProjectionTime = projectionWithAuditorium.DateTime
+                },
+                Auditorium = new AuditoriumDomainModel
+                {
+                    CinemaId = projectionWithAuditorium.Auditorium.CinemaId,
+                    SeatsList = seats
+                },
+                AuditoriumRowNumber = maxRow,
+                AuditoriumSeatNumber = maxNum
+            };
+            return projModel;
         }
 
         //Get all taken seets for auditorium

@@ -393,6 +393,28 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
         }
 
         [TestMethod]
+        public void ReservationController_ReservationProces_IncreaseBonusReturnNull_ReturnBadRequest()
+        {
+            //Arrange
+            int expectedCode = 400;
+            string expectedMessage = "Bonus failed to increase";
+            _userService = new Mock<IUserService>();
+            _userService.Setup(x => x.IncreaseBonus(It.IsAny<Guid>(), It.IsAny<int>())).Returns(Task.FromResult((UserDomainModel)null));
+            ReservationsController reservationsController = new ReservationsController(_reservationService.Object, _levi9PaymentService.Object, _userService.Object);
+
+            //Act
+            var actionResult = reservationsController.ReservationProces(reservationProces).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var resultList = ((ObjectResult)actionResult).Value;
+            var result = (ErrorResponseModel)resultList;
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expectedMessage, result.ErrorMessage);
+            Assert.AreEqual(expectedCode, ((ObjectResult)actionResult).StatusCode);
+            Assert.IsInstanceOfType(actionResult, typeof(ObjectResult));
+        }
+
+        [TestMethod]
         public void ReservationController_Check_ReturnOk()
         {
             //Arrange 

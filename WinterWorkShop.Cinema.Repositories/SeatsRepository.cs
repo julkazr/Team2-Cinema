@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
 
@@ -11,6 +12,7 @@ namespace WinterWorkShop.Cinema.Repositories
     public interface ISeatsRepository : IRepository<Seat> 
     {
         Task<Seat> GetByGuid(Guid id);
+        IEnumerable<Seat> GetByAuditoriumId(int id);
     }
     public class SeatsRepository : ISeatsRepository
     {
@@ -36,6 +38,12 @@ namespace WinterWorkShop.Cinema.Repositories
             return data;
         }
 
+        public IEnumerable<Seat> GetByAuditoriumId(int auditoriumId)
+        {
+            List<Seat> data = _cinemaContext.Seats.Where(x => x.AuditoriumId == auditoriumId).ToList();
+
+            return data;
+        }
 
         public async Task<Seat> GetByGuid(Guid id)
         {
