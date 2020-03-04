@@ -23,5 +23,7 @@ namespace WinterWorkShop.Cinema.API.Models
         public double Rating { get; set; }
 
         public bool Current { get; set; }
+
+        public bool? Oscar { get; set; }
     }
 }

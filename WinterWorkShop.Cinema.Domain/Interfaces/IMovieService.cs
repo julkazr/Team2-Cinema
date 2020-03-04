@@ -51,6 +51,8 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
         /// <returns></returns>
         Task<IEnumerable<MovieDomainModel>> GetTopMoviesAsync();
 
+        Task<IEnumerable<MovieDomainModel>> GetTopMoviesAsync(int year);
+
         /// <summary>
         /// Get movies by given tag
         /// </summary>

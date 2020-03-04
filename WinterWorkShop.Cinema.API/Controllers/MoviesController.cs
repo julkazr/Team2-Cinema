@@ -128,7 +128,8 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 Current = movieModel.Current,
                 Rating = movieModel.Rating,
                 Title = movieModel.Title,
-                Year = movieModel.Year
+                Year = movieModel.Year,
+                Oscar = movieModel.Oscar
             };
 
             MovieDomainModel createMovie;
@@ -198,7 +199,8 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 Title = movieModel.Title,
                 Rating = movieModel.Rating,
                 Year = movieModel.Year,
-                Current = movieModel.Current
+                Current = movieModel.Current,
+                Oscar = movieModel.Oscar ?? false
             };
 
 
@@ -287,6 +289,22 @@ namespace WinterWorkShop.Cinema.API.Controllers
             IEnumerable<MovieDomainModel> movieDomainModels;
 
             movieDomainModels = await _movieService.GetTopMoviesAsync();
+
+            if (movieDomainModels == null)
+            {
+                return BadRequest(movieDomainModels = new List<MovieDomainModel>());
+            }
+
+            return Ok(movieDomainModels);
+        }
+
+        [HttpGet]
+        [Route("tops/{year}")]
+        public async Task<ActionResult<IEnumerable<Movie>>> GetTops(int year)
+        {
+            IEnumerable<MovieDomainModel> movieDomainModels;
+
+            movieDomainModels = await _movieService.GetTopMoviesAsync(year);
 
             if (movieDomainModels == null)
             {
