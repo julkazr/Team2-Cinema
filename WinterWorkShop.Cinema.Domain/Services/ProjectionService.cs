@@ -280,6 +280,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
             var maxNum = 0;
             Seat maxByNum = projectionWithAuditorium.Auditorium.Seats.First();
             Seat maxByRow = projectionWithAuditorium.Auditorium.Seats.First();
+            SeatDomainModel seatForAuditorium;
+            var seats = new List<SeatDomainModel>();
 
             foreach (var seat in projectionWithAuditorium.Auditorium.Seats)
             {
@@ -294,7 +296,16 @@ namespace WinterWorkShop.Cinema.Domain.Services
                     maxByNum = seat;
                     maxNum = maxByNum.Number;
                 }
-            }
+
+
+                seatForAuditorium = new SeatDomainModel
+                {
+                    Id = seat.Id,
+                    Number = seat.Number,
+                    Row = seat.Row
+                };
+                seats.Add(seatForAuditorium);
+            } 
 
             ProjectionWithAuditoriumResultModel projModel = new ProjectionWithAuditoriumResultModel
             {
@@ -309,6 +320,11 @@ namespace WinterWorkShop.Cinema.Domain.Services
                     MovieId = projectionWithAuditorium.MovieId,
                     MovieTitle = projectionWithAuditorium.Movie.Title,
                     ProjectionTime = projectionWithAuditorium.DateTime
+                },
+                Auditorium = new AuditoriumDomainModel
+                {
+                    CinemaId = projectionWithAuditorium.Auditorium.CinemaId,
+                    SeatsList = seats
                 },
                 AuditoriumRowNumber = maxRow,
                 AuditoriumSeatNumber = maxNum

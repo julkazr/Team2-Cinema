@@ -11,7 +11,7 @@ namespace WinterWorkShop.Cinema.Domain.Models
         public int AuditoriumRowNumber { get; set; }
         public int AuditoriumSeatNumber { get; set; }
         public ProjectionDomainModel Projection { get; set; }
+        public AuditoriumDomainModel Auditorium { get; set; }
 
-        //public IEnumerable<SeatDomainModel> Seats { get; set; }
     }
 }
