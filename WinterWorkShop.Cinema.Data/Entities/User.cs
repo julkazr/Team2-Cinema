@@ -23,6 +23,7 @@ namespace WinterWorkShop.Cinema.Data
 
         [Column("bonus")]
         public int? bonus { get; set; }
+        public bool IsSuperUser { get; set; }
 
         public virtual ICollection<Reservation> Reservations { get; set; }
     }
