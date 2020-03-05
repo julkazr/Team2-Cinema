@@ -5,16 +5,25 @@ using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
 using WinterWorkShop.Cinema.Repositories;
+using System.Linq;
 
 namespace WinterWorkShop.Cinema.Domain.Services
 {
     public class CinemaService : ICinemaService
     {
         private readonly ICinemasRepository _cinemasRepository;
+        private readonly IAuditoriumsRepository _auditoriumsRepository;
+        private readonly ISeatsRepository _seatsRepository;
+        private readonly IProjectionsRepository _projectionsRepository;
+        private readonly IReservationRepository _reservationRepository;
 
-        public CinemaService(ICinemasRepository cinemasRepository)
+        public CinemaService(ICinemasRepository cinemasRepository, IAuditoriumsRepository auditoriumsRepository, ISeatsRepository seatsRepository, IProjectionsRepository projectionsRepository, IReservationRepository reservationRepository)
         {
             _cinemasRepository = cinemasRepository;
+            _auditoriumsRepository = auditoriumsRepository;
+            _seatsRepository = seatsRepository;
+            _projectionsRepository = projectionsRepository;
+            _reservationRepository = reservationRepository;
         }
 
         public async Task<IEnumerable<CinemaDomainModel>> GetAllAsync()
@@ -111,7 +120,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
         public async Task<CinemaDomainModel> DeleteCinema(int id)
         {
-            var data = _cinemasRepository.Delete(id);
+            var data = _cinemasRepository.DeleteCinemaComplete(id);
 
             if(data == null)
             {
@@ -127,7 +136,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
             };
 
             return domainModel;
-        }
+        }      
+
     }
 
 }

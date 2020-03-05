@@ -326,6 +326,11 @@ namespace WinterWorkShop.Cinema.Domain.Services
                     CinemaId = projectionWithAuditorium.Auditorium.CinemaId,
                     SeatsList = seats
                 },
+                Movie = new MovieDomainModel
+                {
+                    Rating = projectionWithAuditorium.Movie.Rating ?? 0,
+                    Year = projectionWithAuditorium.Movie.Year
+                },
                 AuditoriumRowNumber = maxRow,
                 AuditoriumSeatNumber = maxNum
             };
