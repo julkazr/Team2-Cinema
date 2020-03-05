@@ -55,6 +55,7 @@ namespace WinterWorkShop.Cinema.Repositories
             List<Reservation> reservations = new List<Reservation>();
             foreach(var item in seats)
             {
+                item.Reservations = new List<Reservation>();
                 var reservation = _cinemaContext.Reservations.Where(x => x.seatId.Equals(item.Id)).ToList();
                 foreach(var res in reservation)
                 {
