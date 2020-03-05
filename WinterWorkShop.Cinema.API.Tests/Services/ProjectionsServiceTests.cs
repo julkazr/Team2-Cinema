@@ -22,7 +22,6 @@ namespace WinterWorkShop.Cinema.Tests.Services
     {
         private Mock<IProjectionsRepository> _mockProjectionsRepository;
         private Mock<IReservationRepository> _mockReservationRepository;
-
         private Projection _projection;
         private ProjectionDomainModel _projectionDomainModel;
         private Reservation _reservation;

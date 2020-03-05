@@ -12,18 +12,10 @@ namespace WinterWorkShop.Cinema.Domain.Services
     public class CinemaService : ICinemaService
     {
         private readonly ICinemasRepository _cinemasRepository;
-        private readonly IAuditoriumsRepository _auditoriumsRepository;
-        private readonly ISeatsRepository _seatsRepository;
-        private readonly IProjectionsRepository _projectionsRepository;
-        private readonly IReservationRepository _reservationRepository;
 
-        public CinemaService(ICinemasRepository cinemasRepository, IAuditoriumsRepository auditoriumsRepository, ISeatsRepository seatsRepository, IProjectionsRepository projectionsRepository, IReservationRepository reservationRepository)
+        public CinemaService(ICinemasRepository cinemasRepository)
         {
             _cinemasRepository = cinemasRepository;
-            _auditoriumsRepository = auditoriumsRepository;
-            _seatsRepository = seatsRepository;
-            _projectionsRepository = projectionsRepository;
-            _reservationRepository = reservationRepository;
         }
 
         public async Task<IEnumerable<CinemaDomainModel>> GetAllAsync()

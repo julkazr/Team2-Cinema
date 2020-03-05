@@ -216,7 +216,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
         {
             //Arrange
             _mockCinemaRepository = new Mock<ICinemasRepository>();
-            _mockCinemaRepository.Setup(x => x.Delete(It.IsAny<int>())).Returns(_cinema);
+            _mockCinemaRepository.Setup(x => x.DeleteCinemaComplete(It.IsAny<int>())).Returns(_cinema);
             CinemaService cinemaService = new CinemaService(_mockCinemaRepository.Object);
 
             //Act
@@ -233,7 +233,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
         {
             //Arrange
             _mockCinemaRepository = new Mock<ICinemasRepository>();
-            _mockCinemaRepository.Setup(x => x.Delete(It.IsAny<int>())).Returns((Data.Cinema)null);
+            _mockCinemaRepository.Setup(x => x.DeleteCinemaComplete(It.IsAny<int>())).Returns((Data.Cinema)null);
             CinemaService cinemaService = new CinemaService(_mockCinemaRepository.Object);
 
             //Act
@@ -250,7 +250,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
             // Arrange
             int id = 1;
             _mockCinemaRepository = new Mock<ICinemasRepository>();
-            _mockCinemaRepository.Setup(x => x.Delete(It.IsAny<int>())).Throws(new DbUpdateException());
+            _mockCinemaRepository.Setup(x => x.DeleteCinemaComplete(It.IsAny<int>())).Throws(new DbUpdateException());
             _mockCinemaRepository.Setup(x => x.Save());
             CinemaService cinemaService = new CinemaService(_mockCinemaRepository.Object);
 

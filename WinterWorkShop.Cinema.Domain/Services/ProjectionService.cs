@@ -15,13 +15,11 @@ namespace WinterWorkShop.Cinema.Domain.Services
     {
         private readonly IProjectionsRepository _projectionsRepository;
         private readonly IReservationRepository _reservationRepository;
-        private readonly ISeatsRepository _seatsRepository;
 
-        public ProjectionService(IProjectionsRepository projectionsRepository, IReservationRepository reservationRepository, ISeatsRepository seatsRepository)
+        public ProjectionService(IProjectionsRepository projectionsRepository, IReservationRepository reservationRepository)
         {
             _projectionsRepository = projectionsRepository;
             _reservationRepository = reservationRepository;
-            _seatsRepository = seatsRepository;
         }
 
         public async Task<IEnumerable<ProjectionDomainModel>> GetAllAsync()
@@ -275,7 +273,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
         public async Task<ProjectionWithAuditoriumResultModel> GetProjectionWithAuditorium(Guid id)
         {
             var projectionWithAuditorium = await _projectionsRepository.GetByIdWithAuditoriumIncluded(id);
-            //var seatList = _seatsRepository.GetByAuditoriumId(projectionWithAuditorium.AuditoriumId);
             var maxRow = 0;
             var maxNum = 0;
             Seat maxByNum = projectionWithAuditorium.Auditorium.Seats.First();
