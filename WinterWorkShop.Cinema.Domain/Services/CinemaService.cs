@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
 using WinterWorkShop.Cinema.Repositories;
-using System.Linq;
 
 namespace WinterWorkShop.Cinema.Domain.Services
 {
@@ -69,7 +66,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             };
 
             var data = _cinemasRepository.Insert(cinemaToCreate);
-            if(data == null)
+            if (data == null)
             {
                 return null;
             }
@@ -94,7 +91,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             };
 
             var data = _cinemasRepository.Update(cinema);
-            if(data == null)
+            if (data == null)
             {
                 return null;
             }
@@ -114,7 +111,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
         {
             var data = _cinemasRepository.DeleteCinemaComplete(id);
 
-            if(data == null)
+            if (data == null)
             {
                 return null;
             }
@@ -128,7 +125,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             };
 
             return domainModel;
-        }      
+        }
 
     }
 
