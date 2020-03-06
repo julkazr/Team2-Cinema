@@ -146,7 +146,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
             {
                 return BadRequest(ModelState);
             }
-            updateProjectionModel.projectionTime.AddHours(1);
 
             ProjectionDomainModel projectionDomain = await _projectionService.GetByIdAsync(id);
 
