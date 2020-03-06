@@ -30,12 +30,13 @@ namespace WinterWorkShop.Cinema.API.Controllers
         // i.e. try IdentityServer4
         [HttpGet]
         [Route("/get-token")]
-        public async Task<IActionResult> GenerateToken(string name = "aspnetcore-workshop-demo", bool admin = false)
+        public async Task<IActionResult> GenerateToken(string name = "aspnetcore-workshop-demo", bool admin = false, bool superUser = false)
         {
             try
             {
                 var user = await _userService.GetUserByUserName(name);
                 admin = user.IsAdmin;
+                superUser = user.IsSuperUser;
             }
             catch (DbUpdateException e)
             {
@@ -48,7 +49,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 return BadRequest(errorResponse);
             }
             var jwt = JwtTokenGenerator
-                .Generate(name, admin, _configuration["Tokens:Issuer"], _configuration["Tokens:Key"]);
+                .Generate(name, admin, superUser, _configuration["Tokens:Issuer"], _configuration["Tokens:Key"]);
 
             return Ok(new {token = jwt});
         }

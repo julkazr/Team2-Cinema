@@ -37,7 +37,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
                     LastName = item.LastName,
                     UserName = item.UserName,
                     IsAdmin = item.IsAdmin,
-                    bonus = item.bonus ?? 0
+                    bonus = item.bonus ?? 0,
+                    IsSuperUser =item.IsSuperUser
                 };
                 result.Add(model);
             }
@@ -61,7 +62,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 LastName = data.LastName,
                 UserName = data.UserName,
                 IsAdmin = data.IsAdmin,
-                bonus = data.bonus ?? 0
+                bonus = data.bonus ?? 0,
+                IsSuperUser = data.IsSuperUser
             };
 
             return domainModel;
@@ -83,7 +85,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 LastName = data.LastName,
                 UserName = data.UserName,
                 IsAdmin = data.IsAdmin,
-                bonus = data.bonus ?? 0
+                bonus = data.bonus ?? 0,
+                IsSuperUser = data.IsSuperUser
             };
 
             return domainModel;
@@ -113,7 +116,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 LastName = userAfterUpdate.LastName,
                 UserName = userAfterUpdate.UserName,
                 IsAdmin = userAfterUpdate.IsAdmin,
-                bonus = userAfterUpdate.bonus ?? 0
+                bonus = userAfterUpdate.bonus ?? 0,
+                IsSuperUser = userAfterUpdate.IsSuperUser
             };
 
             return domainModel;
