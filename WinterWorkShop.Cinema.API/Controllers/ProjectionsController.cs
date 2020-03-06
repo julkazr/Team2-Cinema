@@ -141,13 +141,12 @@ namespace WinterWorkShop.Cinema.API.Controllers
         [HttpPut]
         [Route("update/{id}")]
         public async Task<ActionResult> Put(Guid id, UpdateProjectionModel updateProjectionModel)
-        {
-            int a = 1;
-            updateProjectionModel.projectionTime.AddHours(1);
+        {       
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            updateProjectionModel.projectionTime.AddHours(1);
 
             ProjectionDomainModel projectionDomain = await _projectionService.GetByIdAsync(id);
 
