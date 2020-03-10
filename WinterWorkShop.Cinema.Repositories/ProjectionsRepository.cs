@@ -16,6 +16,7 @@ namespace WinterWorkShop.Cinema.Repositories
         Task<Projection> GetByIdWithReservationAsync(object id);
         Task<Projection> GetByIdWithReservationsAsync(object id);
         Task<Projection> GetByIdWithAuditoriumIncluded(Guid id);
+        Task<Projection> GetByIdAsyncView(object id);
     }
 
     public class ProjectionsRepository : IProjectionsRepository
@@ -51,6 +52,40 @@ namespace WinterWorkShop.Cinema.Repositories
             projections.Movie = movies[0];
 
             return projections;
+        }
+        //Metod ispod ima istu funkciju kao metod iznad, samo sto koristi kreiran view (performance task)
+        public async Task<Projection> GetByIdAsyncView(object id)
+        {
+            var projections =  _cinemaContext.ProjectionsWithMovieAndAuditoriums.ToList();
+            var filteredProjeciton = projections.Where(x => x.Id.Equals(id)).First();
+
+            Auditorium auditorium = new Auditorium
+            {
+                Id = filteredProjeciton.AuditoriumId,
+                Name = filteredProjeciton.AuditoriumName
+            };
+
+            Movie movie = new Movie
+            {
+                Id = filteredProjeciton.MovieId,
+                Title = filteredProjeciton.MovieTitle,
+                Year = filteredProjeciton.MovieYear,
+                Rating = filteredProjeciton.MovieRating,
+                Current = filteredProjeciton.MovieCurrent,
+                Oscar = filteredProjeciton.MovieOscar
+            };
+
+            Projection projection = new Projection
+            {
+                Id = filteredProjeciton.Id,
+                MovieId = filteredProjeciton.MovieId,
+                AuditoriumId = filteredProjeciton.AuditoriumId,
+                DateTime = filteredProjeciton.projectionDateTime,
+                Movie = movie,
+                Auditorium = auditorium
+            };
+
+            return projection;
         }
 
         public async Task<Projection> GetByIdWithReservationsAsync(object id)

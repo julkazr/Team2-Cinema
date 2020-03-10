@@ -17,6 +17,7 @@ namespace WinterWorkShop.Cinema.Data
         public DbSet<Tag> Tags { get; set; }
         public DbSet<TagMovie> TagMovies { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<ProjectionsWithMovieAndAuditorium> ProjectionsWithMovieAndAuditoriums { get; set; }
 
 
 
