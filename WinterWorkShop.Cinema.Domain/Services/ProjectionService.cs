@@ -273,6 +273,10 @@ namespace WinterWorkShop.Cinema.Domain.Services
         public async Task<ProjectionWithAuditoriumResultModel> GetProjectionWithAuditorium(Guid id)
         {
             var projectionWithAuditorium = await _projectionsRepository.GetByIdWithAuditoriumIncluded(id);
+            if(projectionWithAuditorium == null)
+            {
+                return null;
+            }
             var maxRow = 0;
             var maxNum = 0;
             Seat maxByNum = projectionWithAuditorium.Auditorium.Seats.First();

@@ -265,13 +265,13 @@ namespace WinterWorkShop.Cinema.API.Controllers
             ProjectionWithAuditoriumResultModel projection;
             projection = await _projectionService.GetProjectionWithAuditorium(id);
 
-            IEnumerable<SeatDomainModel> ReservedSeatsList = await _projectionService.GetReserverdSeetsForProjection(id);
-            projection.ListOfReservedSeats = (List<SeatDomainModel>)ReservedSeatsList;
-
             if (projection == null)
             {
                 return NotFound(Messages.PROJECTION_DOES_NOT_EXIST);
             }
+
+            IEnumerable<SeatDomainModel> ReservedSeatsList = await _projectionService.GetReserverdSeetsForProjection(id);
+            projection.ListOfReservedSeats = (List<SeatDomainModel>)ReservedSeatsList;
 
             return Ok(projection);
         }

@@ -26,6 +26,8 @@ namespace WinterWorkShop.Cinema.Tests.Services
         private ProjectionDomainModel _projectionDomainModel;
         private Reservation _reservation;
         private FilterProjectionDomainModel _filterProjectionDomainModel;
+        private ProjectionWithAuditoriumResultModel _projectionWithAuditoriumResultModel;
+        private SeatDomainModel _seatDomainModel;
 
         [TestInitialize]
         public void TestInitialize()
@@ -82,6 +84,41 @@ namespace WinterWorkShop.Cinema.Tests.Services
                 MovieId = Guid.NewGuid(),
                 MovieTitle = "ImeFilma",
                 ProjectionTime = DateTime.Now.AddDays(1)
+            };
+
+            _seatDomainModel = new SeatDomainModel
+            {
+                Id = Guid.NewGuid(),
+                Row = 1,
+                Number = 1,
+                AuditoriumId = 1
+            };
+
+            List < SeatDomainModel > seats = new List<SeatDomainModel>();
+            seats.Add(_seatDomainModel);
+
+            _projectionWithAuditoriumResultModel = new ProjectionWithAuditoriumResultModel
+            {
+                Projection = new ProjectionDomainModel
+                {
+                    Id = Guid.NewGuid(),
+                    AditoriumName = "auditName",
+                    AuditoriumId = 1,
+
+                    MovieId = Guid.NewGuid(),
+                    MovieTitle = "Title",
+                    ProjectionTime = DateTime.Now
+                },
+                Auditorium = new AuditoriumDomainModel
+                {
+                    CinemaId = 1,
+                    SeatsList = seats
+                },
+                Movie = new MovieDomainModel
+                {
+                    Rating = 7,
+                    Year = 2020
+                }
             };
 
             List<Projection> projectionsModelsList = new List<Projection>();
@@ -505,6 +542,91 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
             //Assert
             Assert.IsNull(actionResult);
+        }
+
+        [TestMethod]
+        public void ProjectionService_GetProjectionWithAuditorium_ReturnProjection()
+        {
+            //Arrange
+            var seat = new Seat
+            {
+                Id = Guid.NewGuid(),
+                Row = 1,
+                Number = 1,
+                AuditoriumId = 1
+            };
+
+            List<Seat> seats = new List<Seat>();
+            seats.Add(seat);
+            _projection = new Projection
+            {
+                Id = Guid.NewGuid(),
+                AuditoriumId = _projectionWithAuditoriumResultModel.Auditorium.Id,
+                DateTime = DateTime.Now,
+                Auditorium = new Auditorium
+                {
+                    Id = _projectionWithAuditoriumResultModel.Auditorium.Id,
+                    CinemaId = 1,
+                    Name = "auditName",
+                    Seats = seats
+                },
+                Movie = new Movie
+                {
+                    Year = _projectionWithAuditoriumResultModel.Movie.Year,
+                    Rating = _projectionWithAuditoriumResultModel.Movie.Rating
+                }
+            };
+            Guid id = _projection.Id;
+            _mockProjectionsRepository = new Mock<IProjectionsRepository>();
+            var responseTask = Task.FromResult(_projection);
+            _mockProjectionsRepository.Setup(x => x.GetByIdWithAuditoriumIncluded(It.IsAny<Guid>())).Returns(responseTask);
+
+            ProjectionService projectionService = new ProjectionService(_mockProjectionsRepository.Object, _mockReservationRepository.Object);
+
+            //Act
+            var result = projectionService.GetProjectionWithAuditorium(id).ConfigureAwait(false).GetAwaiter().GetResult();
+            var model = (ProjectionWithAuditoriumResultModel)result;
+
+            //Assert
+            Assert.IsNotNull(model);
+            Assert.AreEqual(id, model.Projection.Id);
+            Assert.IsInstanceOfType(model, typeof(ProjectionWithAuditoriumResultModel));
+        }
+
+        [TestMethod]
+        public void ProjectionService_GetProjectionWithAuditorium_ReturnNull()
+        {
+            //Arrange
+            //_projection = null;
+            //List<Seat> seats = null;
+            Guid id = _projection.Id;
+            //Task<Projection> responseTask = Task.FromResult(_projection);
+            _mockProjectionsRepository.Setup(x => x.GetByIdWithAuditoriumIncluded(It.IsAny<Guid>())).Returns(Task.FromResult((Projection)null));
+            ProjectionService projectionService = new ProjectionService(_mockProjectionsRepository.Object, _mockReservationRepository.Object);
+
+            //Act
+            var result = projectionService.GetProjectionWithAuditorium(id).ConfigureAwait(false).GetAwaiter().GetResult();
+            var model = (ProjectionWithAuditoriumResultModel)result;
+
+            //Assert
+            Assert.IsNull(model);
+
+            ////Assert
+            //int expectedCount = 0;
+            //IEnumerable<Projection> projections = null;
+            //Task<IEnumerable<Projection>> responseTask = Task.FromResult(projections);
+
+            //_mockProjectionsRepository = new Mock<IProjectionsRepository>();
+            //_mockProjectionsRepository.Setup(x => x.GetAll()).Returns(responseTask);
+
+            //ProjectionService projectionService = new ProjectionService(_mockProjectionsRepository.Object, _mockReservationRepository.Object);
+
+            ////Act
+            //var result = projectionService.FilterProjections(_filterProjectionDomainModel).ConfigureAwait(false).GetAwaiter().GetResult();
+            //var domainmodel = (List<ProjectionDomainModel>)result;
+
+            ////Assert
+            //Assert.IsNull(domainmodel);
         }
     }
 }

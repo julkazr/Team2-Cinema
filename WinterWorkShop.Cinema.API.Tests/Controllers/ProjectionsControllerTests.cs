@@ -706,5 +706,86 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.IsInstanceOfType(actionResult, typeof(OkObjectResult));
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)actionResult).StatusCode);
         }
+
+        [TestMethod]
+        public void ProjectionsController_GetWithAuditorium_ReturnOk()
+        {
+            //Arrange
+            Guid id = Guid.NewGuid();
+            int expectedStatusCode = 200;
+            var seats = new List<SeatDomainModel>();
+            int maxNum = 0;
+            int maxRow = 0;
+            ProjectionWithAuditoriumResultModel projection = new ProjectionWithAuditoriumResultModel
+            {
+                IsSuccessful = true,
+                ErrorMessage = null,
+                Projection = new ProjectionDomainModel
+                {
+                    Id = Guid.NewGuid(),
+                    AditoriumName = "auditName",
+                    AuditoriumId = 1,
+
+                    MovieId = Guid.NewGuid(),
+                    MovieTitle = "Title",
+                    ProjectionTime = DateTime.Now
+                },
+                Auditorium = new AuditoriumDomainModel
+                {
+                    CinemaId = 1,
+                    SeatsList = seats
+                },
+                Movie = new MovieDomainModel
+                {
+                    Rating = 7,
+                    Year = 2020
+                }
+            };
+            IEnumerable<SeatDomainModel> seatDomains = seats;
+            Task<ProjectionWithAuditoriumResultModel> responseTask = Task.FromResult(projection);
+            _projectionService = new Mock<IProjectionService>();
+            _projectionService.Setup(x => x.GetProjectionWithAuditorium(It.IsAny<Guid>())).Returns(responseTask);
+            _projectionService.Setup(x => x.GetReserverdSeetsForProjection(It.IsAny<Guid>())).Returns(Task.FromResult(seatDomains));
+            ProjectionsController projectionsController = new ProjectionsController(_projectionService.Object);
+
+            //Act
+            var actionResult = projectionsController.GetProjectionWithAuditorium(Guid.NewGuid()).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var result = ((OkObjectResult)actionResult).Value;
+            var projectionResultmodel = (ProjectionWithAuditoriumResultModel)result;
+
+            //Assert
+            Assert.IsNotNull(projectionResultmodel);
+            Assert.AreEqual(expectedStatusCode, ((OkObjectResult)actionResult).StatusCode);
+            Assert.AreEqual(projection.Projection.Id, projectionResultmodel.Projection.Id);
+            Assert.IsInstanceOfType(actionResult, typeof(OkObjectResult));
+        }
+
+        [TestMethod]
+        public void ProjectionsController_GetWithAuditorium_ReturnNotFound()
+        {
+            //Arrange
+            Guid id = Guid.NewGuid();
+            int expectedStatusCode = 404;
+            string expectedMessages = "Projection does not exist.";
+            ProjectionWithAuditoriumResultModel projection = null;
+            //var seats = new List<SeatDomainModel>();
+            List<SeatDomainModel> seats = null;
+            IEnumerable<SeatDomainModel> seatDomains = seats;
+            Task<ProjectionWithAuditoriumResultModel> responseTask = Task.FromResult(projection);
+            _projectionService = new Mock<IProjectionService>();
+            _projectionService.Setup(x => x.GetProjectionWithAuditorium(It.IsAny<Guid>())).Returns(responseTask);
+            _projectionService.Setup(x => x.GetReserverdSeetsForProjection(It.IsAny<Guid>())).Returns(Task.FromResult(seatDomains));
+            ProjectionsController projectionsController = new ProjectionsController(_projectionService.Object);
+
+            //Act
+            var actionResult = projectionsController.GetProjectionWithAuditorium(Guid.NewGuid()).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var result = ((ObjectResult)actionResult).Value;
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(actionResult, typeof(ObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((ObjectResult)actionResult).StatusCode);
+            Assert.AreEqual(expectedMessages, result);
+        }
     }
 }
