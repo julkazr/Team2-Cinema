@@ -220,7 +220,9 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
         public async Task<ProjectionDomainModel> GetByIdAsync(Guid id)
         {
-            var data = await _projectionsRepository.GetByIdAsync(id);
+            //var data = await _projectionsRepository.GetByIdAsync(id);
+            var data = await _projectionsRepository.GetByIdAsyncView(id);
+            //view
 
             if (data == null)
             {
@@ -310,8 +312,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             ProjectionWithAuditoriumResultModel projModel = new ProjectionWithAuditoriumResultModel
             {
-                IsSuccessful = true,
-                ErrorMessage = null,
+                //IsSuccessful = true,
+                //ErrorMessage = null,
                 Projection = new ProjectionDomainModel
                 {
                     Id = projectionWithAuditorium.Id,
