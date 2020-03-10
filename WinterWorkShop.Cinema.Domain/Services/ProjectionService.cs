@@ -308,8 +308,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             ProjectionWithAuditoriumResultModel projModel = new ProjectionWithAuditoriumResultModel
             {
-                IsSuccessful = true,
-                ErrorMessage = null,
+                //IsSuccessful = true,
+                //ErrorMessage = null,
                 Projection = new ProjectionDomainModel
                 {
                     Id = projectionWithAuditorium.Id,
