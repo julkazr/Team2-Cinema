@@ -195,7 +195,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
         //**********************************************************************************
         //CREATE CINEMA WITH AUDITORIUM AND HIS SEATS
 
-
         [Authorize(Roles = "admin")]
         [HttpPost]
         [Route("createwithauditorium")]
