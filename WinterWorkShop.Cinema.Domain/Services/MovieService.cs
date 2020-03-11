@@ -137,6 +137,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
         public async Task<UpdateMovieResultModel> UpdateMovie(MovieDomainModel updateMovie) {
 
+            var movieBeforeUpdate = await _moviesRepository.GetByIdAsync(updateMovie.Id);
             var projectionsForMovie = _projectionsRepository.GetByMovieId(updateMovie.Id);
             List<Projection> activeMovieProjections = new List<Projection>();
 
@@ -157,7 +158,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 Oscar = updateMovie.Oscar
             };
 
-            if (activeMovieProjections.Count == 0)
+            if (activeMovieProjections.Count == 0 || movieBeforeUpdate.Current == updateMovie.Current)
             {
                 movie.Current = updateMovie.Current;
             }
@@ -168,7 +169,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
                     IsSuccessful = false,
                     ErrorMessage = Messages.PROJECTION_EXISTING_FOR_MOVIE_ERROR
                 };
-
             }
 
 
