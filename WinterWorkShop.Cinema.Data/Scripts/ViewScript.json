@@ -1,0 +1,7 @@
+﻿CREATE VIEW ProjectionsWithMovieAndAuditorium 
+AS
+select Projection.id as id, Projection.movieId, Projection.[dateTime] as projectionDateTime, Movie.title as [movieTitle], 
+Movie.[year] as movieYear, Movie.rating as movieRating, Movie.[current] as movieCurrent, Movie.Oscar as movieOscar, Auditorium.id as auditoriumId, Auditorium.[name] as auditoriumName
+from Auditorium
+join Projection on Auditorium.id = Projection.auditoriumId
+join Movie on Projection.movieId = Movie.id
