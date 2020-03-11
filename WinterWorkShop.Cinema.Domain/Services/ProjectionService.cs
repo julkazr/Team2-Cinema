@@ -102,7 +102,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return result;
         }
         
-
         public async Task<IEnumerable<ProjectionDomainModel>> FilterProjections(FilterProjectionDomainModel filterProjectionDomainModel)
         {
             var allProjections = await _projectionsRepository.GetAll();
@@ -166,7 +165,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             return result;
         }
-
 
         //DELETE PROJECTION
         public async Task<ProjectionDomainModel> DeleteProjection(Guid id)

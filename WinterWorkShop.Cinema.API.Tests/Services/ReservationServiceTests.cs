@@ -316,7 +316,6 @@ namespace WinterWorkShop.Cinema.Tests.Services
             Assert.IsNull(result);
         }
 
-
         [TestMethod]
         public void ReservationService_CheckPosition_WithOneSeat_ReturnResult()
         {
@@ -362,6 +361,102 @@ namespace WinterWorkShop.Cinema.Tests.Services
             Assert.IsNotNull(result);
             Assert.AreEqual(expectedMessage, result.InfoMessage);
             Assert.IsFalse(result.CheckSucceed);
+        }
+
+        [TestMethod]
+        public void ReservationService_CheckReservationForProjection_GetAllReturnNull_ReturnResult()
+        {
+            //Arrange
+            _seatsRepository = new Mock<ISeatsRepository>();
+            List<Reservation> list = new List<Reservation>();
+            IEnumerable<Reservation> reservations = list;
+            Task<IEnumerable<Reservation>> responseTask = Task.FromResult(reservations);
+            _reservationRepository.Setup(x => x.GetAll()).Returns(responseTask);
+            ReservationService reservationService = new ReservationService(_reservationRepository.Object, _seatsRepository.Object);
+            string expectedMessage = "There are no reservations";
+            int expectedCount = 0;
+            listSeatsId = new List<Guid>();
+            listSeatsId.Add(Guid.NewGuid());
+            Guid projectionId = Guid.NewGuid();
+
+            //Act
+            var result = reservationService.CheckReservationForSeatsForProjection(listSeatsId, projectionId).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expectedCount, result.SeatsTaken.Count);
+            Assert.AreEqual(expectedMessage, result.InfoMessage);
+            Assert.IsTrue(result.SeatsAreFree);
+            Assert.IsInstanceOfType(result, typeof(CheckReservationForSeatsDomainModel));
+
+        }
+
+        [TestMethod]
+        public void ReservationService_CheckReservationForProjection_ReturnResult()
+        {
+            //Arrange
+            _seatsRepository = new Mock<ISeatsRepository>();
+            Reservation reservation = new Reservation
+            {
+                id = 1,
+                projectionId = Guid.NewGuid(),
+                seatId = Guid.NewGuid()
+            };
+            List<Reservation> list = new List<Reservation>();
+            list.Add(reservation);
+            IEnumerable<Reservation> reservations = list;
+            Task<IEnumerable<Reservation>> responseTask = Task.FromResult(reservations);
+            _reservationRepository.Setup(x => x.GetAll()).Returns(responseTask);
+            ReservationService reservationService = new ReservationService(_reservationRepository.Object, _seatsRepository.Object);
+            string expectedMessage = "Seats are free to reserve";
+            int expectedCount = 0;
+            listSeatsId = new List<Guid>();
+            listSeatsId.Add(Guid.NewGuid());
+            Guid projectionId = reservation.projectionId;
+
+            //Act
+            var result = reservationService.CheckReservationForSeatsForProjection(listSeatsId, projectionId).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expectedCount, result.SeatsTaken.Count);
+            Assert.AreEqual(expectedMessage, result.InfoMessage);
+            Assert.IsTrue(result.SeatsAreFree);
+            Assert.IsInstanceOfType(result, typeof(CheckReservationForSeatsDomainModel));
+        }
+
+        [TestMethod]
+        public void ReservationService_CheckReservationForProjection_SeatsIsAlreadyForReserve_ReturnResult()
+        {
+            //Arrange
+            _seatsRepository = new Mock<ISeatsRepository>();
+            Reservation reservation = new Reservation
+            {
+                id = 1,
+                projectionId = Guid.NewGuid(),
+                seatId = Guid.NewGuid()
+            };
+            List<Reservation> list = new List<Reservation>();
+            list.Add(reservation);
+            IEnumerable<Reservation> reservations = list;
+            Task<IEnumerable<Reservation>> responseTask = Task.FromResult(reservations);
+            _reservationRepository.Setup(x => x.GetAll()).Returns(responseTask);
+            ReservationService reservationService = new ReservationService(_reservationRepository.Object, _seatsRepository.Object);
+            string expectedMessage = "Some of seats are already reserved";
+            int expectedCount = 1;
+            listSeatsId = new List<Guid>();
+            listSeatsId.Add(reservation.seatId);
+            Guid projectionId = reservation.projectionId;
+
+            //Act
+            var result = reservationService.CheckReservationForSeatsForProjection(listSeatsId, projectionId).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expectedCount, result.SeatsTaken.Count);
+            Assert.AreEqual(expectedMessage, result.InfoMessage);
+            Assert.IsFalse(result.SeatsAreFree);
+            Assert.IsInstanceOfType(result, typeof(CheckReservationForSeatsDomainModel));
         }
 
     }

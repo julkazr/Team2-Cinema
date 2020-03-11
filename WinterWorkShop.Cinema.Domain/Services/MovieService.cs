@@ -286,9 +286,11 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             List<MovieDomainModel> topTenResults = result.Where(x => x.Year.Equals(year)).OrderByDescending(x => x.Rating).Take(11).ToList();
 
-            for(int i = 0; i < 10; i ++)
+            int len = topTenResults.Count;
+
+            for(int i = 0; i < len; i ++)
             {
-                for(int j = i + 1; j < 10; j ++)
+                for(int j = i + 1; j < len; j ++)
                 {
                     if(topTenResults[i].Rating == topTenResults[j].Rating && topTenResults[j].Oscar && !topTenResults[i].Oscar)
                     {
