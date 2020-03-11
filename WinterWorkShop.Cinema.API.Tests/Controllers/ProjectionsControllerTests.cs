@@ -718,8 +718,6 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             int maxRow = 0;
             ProjectionWithAuditoriumResultModel projection = new ProjectionWithAuditoriumResultModel
             {
-                IsSuccessful = true,
-                ErrorMessage = null,
                 Projection = new ProjectionDomainModel
                 {
                     Id = Guid.NewGuid(),

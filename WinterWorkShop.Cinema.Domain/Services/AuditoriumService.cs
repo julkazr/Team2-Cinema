@@ -164,8 +164,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return domainModel;
         }
 
-
-
         public async Task<AuditoriumDomainModel> UpdateAuditorium(AuditoriumDomainModel auditoriumDomain, int numberOfRows, int numberOfSeats, bool SeatsAreFree)
         {
             Auditorium auditorium = new Auditorium()

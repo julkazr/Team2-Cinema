@@ -433,7 +433,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
             Guid id = _projection.Id;
             _mockProjectionsRepository = new Mock<IProjectionsRepository>();
             var responseTask = Task.FromResult(_projection);
-            _mockProjectionsRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).Returns(responseTask);
+            _mockProjectionsRepository.Setup(x => x.GetByIdAsyncView(It.IsAny<Guid>())).Returns(responseTask);
 
             ProjectionService projectionService = new ProjectionService(_mockProjectionsRepository.Object, _mockReservationRepository.Object);
 
