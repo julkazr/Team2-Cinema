@@ -51,7 +51,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <param name="projectionModel"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin, superuser")]
         [Route("")]
         public async Task<ActionResult<ProjectionDomainModel>> PostAsync(CreateProjectionModel projectionModel)
         {
@@ -137,7 +137,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Ok(projectionDomainModels);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin, superuser")]
         [HttpPut]
         [Route("update/{id}")]
         public async Task<ActionResult> Put(Guid id, UpdateProjectionModel updateProjectionModel)
@@ -183,7 +183,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Accepted("projections//" + projectionDomainModel.Id, projectionDomainModel);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin, superuser")]
         [HttpDelete]
         [Route("{id}")]
         public async Task<ActionResult> Delete(Guid id)
