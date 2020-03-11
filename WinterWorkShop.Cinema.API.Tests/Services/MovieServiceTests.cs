@@ -3,7 +3,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Data.Entities;
@@ -174,7 +173,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
             //Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(id, result.Id);
-            Assert.IsInstanceOfType(result, typeof(MovieDomainModel));        
+            Assert.IsInstanceOfType(result, typeof(MovieDomainModel));
         }
 
         [TestMethod]

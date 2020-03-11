@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Data.Entities;
@@ -39,7 +38,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 {
                     id = item.id,
                     projectionId = item.projectionId,
-                    //reservation = item.reservation,
                     seatId = item.seatId,
                     userId = item.userId
                 };
@@ -53,7 +51,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
         {
             var data = await _reservationRepository.GetByIdAsync(id);
 
-            if(data == null)
+            if (data == null)
             {
                 return null;
             }
@@ -63,7 +61,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 id = data.id,
                 projectionId = data.projectionId,
                 seatId = data.seatId,
-                //reservation = data.reservation
                 userId = data.userId
             };
 
@@ -77,13 +74,12 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 id = newReservation.id,
                 projectionId = newReservation.projectionId,
                 seatId = newReservation.seatId,
-                //reservation = newReservation.reservation
                 userId = newReservation.userId
             };
 
             var data = _reservationRepository.Insert(reservationToCreate);
 
-            if(data == null)
+            if (data == null)
             {
                 return null;
             }
@@ -95,7 +91,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 id = data.id,
                 projectionId = data.projectionId,
                 seatId = data.seatId,
-                //reservation = data.reservation
                 userId = data.userId
             };
 
@@ -109,13 +104,12 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 id = updateReservation.id,
                 projectionId = updateReservation.projectionId,
                 seatId = updateReservation.seatId,
-                //reservation = updateReservation.reservation
                 userId = updateReservation.userId
             };
 
             var data = _reservationRepository.Update(reservationToUpdate);
 
-            if(data == null)
+            if (data == null)
             {
                 return null;
             }
@@ -127,7 +121,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 id = data.id,
                 projectionId = data.projectionId,
                 seatId = data.seatId,
-                //reservation = data.reservation
                 userId = data.userId
             };
 
@@ -138,7 +131,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
         {
             var data = _reservationRepository.Delete(id);
 
-            if(data == null)
+            if (data == null)
             {
                 return null;
             }
@@ -149,10 +142,9 @@ namespace WinterWorkShop.Cinema.Domain.Services
             {
                 id = data.id,
                 projectionId = data.projectionId,
-                //reservation = data.reservation,
                 seatId = data.seatId,
                 userId = data.userId
-                
+
             };
 
             return domainModel;
@@ -181,10 +173,10 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 var reservationForGivenSeat = allReserevations.Where(x => x.seatId.Equals(seatId)).ToList();
                 if (reservationForGivenSeat.Count > 0)
                 {
-                    result.SeatsTaken.Add(seatId);                    
+                    result.SeatsTaken.Add(seatId);
                 }
             }
-            if(result.SeatsTaken.Count > 0)
+            if (result.SeatsTaken.Count > 0)
             {
                 result.SeatsAreFree = false;
                 result.InfoMessage = "Some of seats are already reserved";
@@ -203,7 +195,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
         {
             CheckReservationForSeatsDomainModel result = new CheckReservationForSeatsDomainModel();
             result.SeatsTaken = new List<Guid>();
-            //.Where(x => x.projectionId.Equals(projectionId))
 
             var allReserevations = await _reservationRepository.GetAll();
             var allReserevationsForProjection = allReserevations.Where(x => x.projectionId.Equals(projectionId));
@@ -283,7 +274,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             {
                 Seat firstSeat = selectedSeats[0];
                 okList.Add(firstSeat);
-                
+
                 int currentRow = okList.Last().Row;
 
                 int j = 1;
@@ -293,7 +284,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                     if (!(selectedSeats[i].Number == okList.First().Number - 1 || selectedSeats[i].Number == okList.Last().Number + 1))
                     {
                         //return sedista nisu u nizu 
-                        if ((selectedSeats[i].Row == firstSeat.Row +1)  &&  (selectedSeats[i].Number == j) && (selectedSeats[i-j].Number == AuditoriumMAxNumber))
+                        if ((selectedSeats[i].Row == firstSeat.Row + 1) && (selectedSeats[i].Number == j) && (selectedSeats[i - j].Number == AuditoriumMAxNumber))
                         {
 
                             okList.Add(selectedSeats[i]);
@@ -303,7 +294,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                             //Sedista prelaze u drugi red ali su u nizu
                             result.SeetExceedingRow = true;
                             result.InfoMessage = "Seets escceding one row";
-                            
+
                         }
                         //Sedista nisu u nizu ni u redu
                         result.CheckSucceed = false;
@@ -327,14 +318,12 @@ namespace WinterWorkShop.Cinema.Domain.Services
                             result.InfoMessage = "Seets are not next to each other and exceeding the row";
                             return result;
                         }
-
-                        //okList.Add(selectedSeats[i]);
                     }
                 }
 
                 //Sva sedista su ok
                 result.CheckSucceed = true;
-                if(result.InfoMessage == null)
+                if (result.InfoMessage == null)
                 {
                     result.InfoMessage = "Seets are next to each other and they are in same row";
                 }

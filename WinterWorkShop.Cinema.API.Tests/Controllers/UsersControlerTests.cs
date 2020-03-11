@@ -3,7 +3,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.API.Controllers;
 using WinterWorkShop.Cinema.Domain.Common;
@@ -24,7 +23,8 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             //Arrange
 
             List<UserDomainModel> userDomainModelList = new List<UserDomainModel>();
-            UserDomainModel user = new UserDomainModel{
+            UserDomainModel user = new UserDomainModel
+            {
                 Id = Guid.NewGuid(),
                 FirstName = "Pera",
                 LastName = "Peric",
@@ -111,7 +111,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             var result = usersController.GetbyIdAsync(guId).ConfigureAwait(false).GetAwaiter().GetResult().Result;
             var resultValue = ((OkObjectResult)result).Value;
             var userDomainModelResult = (UserDomainModel)resultValue;
-                
+
             //Assert
 
             Assert.IsNotNull(userDomainModelResult);
@@ -196,7 +196,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             //Arrange
 
             UserDomainModel user = null;
-            
+
             Task<UserDomainModel> responseTask = Task.FromResult(user);
 
             _userService = new Mock<IUserService>();

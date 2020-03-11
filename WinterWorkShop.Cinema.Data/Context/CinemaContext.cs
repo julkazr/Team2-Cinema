@@ -1,12 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using WinterWorkShop.Cinema.Data.Entities;
 
 namespace WinterWorkShop.Cinema.Data
 {
-    public class CinemaContext: DbContext
+    public class CinemaContext : DbContext
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Movie> Movies { get; set; }
@@ -58,7 +55,7 @@ namespace WinterWorkShop.Cinema.Data
                 .HasMany(x => x.Auditoriums)
                 .WithOne(x => x.Cinema)
                 .IsRequired();
-            
+
             /// <summary>
             /// Auditorium -> Cinema relation
             /// </summary>
@@ -74,7 +71,7 @@ namespace WinterWorkShop.Cinema.Data
             /// Auditorium -> Projection relation
             /// </summary>
             /// <returns></returns>
-            modelBuilder.Entity<Auditorium>()               
+            modelBuilder.Entity<Auditorium>()
                .HasMany(x => x.Projections)
                .WithOne(x => x.Auditorium)
                .IsRequired();
@@ -171,17 +168,6 @@ namespace WinterWorkShop.Cinema.Data
                 .HasMany(x => x.TagMovies)
                 .WithOne(x => x.Tag)
                 .IsRequired();
-
-            //modelBuilder.Entity<Reservation>()
-            //   .HasOne(x => x.Seat)
-            //   .WithMany(x => x.Reservations)
-            //   .HasForeignKey(x => x.seatId)
-            //   .IsRequired();
-
-            //modelBuilder.Entity<Seat>()
-            //    .HasMany(x => x.Reservations)
-            //    .WithOne(x => x.Seat)
-            //    .IsRequired();
 
             modelBuilder.Entity<Reservation>()
                .HasOne(x => x.User)

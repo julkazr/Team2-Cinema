@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Common;
@@ -150,7 +148,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 SeatsList = new List<SeatDomainModel>()
             };
 
-            foreach(var item in data.Seats)
+            foreach (var item in data.Seats)
             {
                 domainModel.SeatsList.Add(new SeatDomainModel
                 {
@@ -167,7 +165,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
         public async Task<AuditoriumDomainModel> UpdateAuditorium(AuditoriumDomainModel auditoriumDomain, int numberOfRows, int numberOfSeats, bool SeatsAreFree)
         {
             Auditorium auditorium = new Auditorium()
-            { 
+            {
                 Id = auditoriumDomain.Id,
                 CinemaId = auditoriumDomain.CinemaId,
                 Name = auditoriumDomain.Name,
@@ -268,7 +266,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                         seats.Add(item);
                     }
                 }
-                foreach(var item in seats)
+                foreach (var item in seats)
                 {
                     update.Seats.Remove(item);
                     Seat seat = _seatsRepository.Delete(item.Id);
@@ -293,7 +291,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             };
             domainModel.SeatsList = new List<SeatDomainModel>();
 
-            foreach(var item in data.Seats)
+            foreach (var item in data.Seats)
             {
                 SeatDomainModel seat = new SeatDomainModel
                 {
@@ -318,11 +316,11 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 seats.Add(item);
             }
 
-            for (int i = 0; i < seats.Count; i ++)
+            for (int i = 0; i < seats.Count; i++)
             {
                 Seat seatsDelete = _seatsRepository.Delete(seats[i].Id);
                 seatsResult.Add(seatsDelete);
-  
+
             }
             _seatsRepository.Save();
 

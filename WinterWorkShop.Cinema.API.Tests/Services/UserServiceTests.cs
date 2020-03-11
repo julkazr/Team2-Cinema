@@ -2,7 +2,6 @@
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Models;
@@ -51,7 +50,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
                 LastName = "Peric",
                 UserName = "Perr",
                 IsAdmin = true
-            };            
+            };
             userModelList.Add(user);
 
             IEnumerable<User> list = userModelList;

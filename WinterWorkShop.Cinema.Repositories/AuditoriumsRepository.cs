@@ -1,16 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Data.Entities;
 
 namespace WinterWorkShop.Cinema.Repositories
 {
-    public interface IAuditoriumsRepository : IRepository<Auditorium> 
+    public interface IAuditoriumsRepository : IRepository<Auditorium>
     {
         Task<IEnumerable<Auditorium>> GetByAuditName(string name, int id);
     }
@@ -44,7 +41,7 @@ namespace WinterWorkShop.Cinema.Repositories
         public async Task<IEnumerable<Auditorium>> GetAll()
         {
             //includovan seats
-            var data = await _cinemaContext.Auditoriums.Include(x=>x.Seats).ToListAsync();
+            var data = await _cinemaContext.Auditoriums.Include(x => x.Seats).ToListAsync();
 
             return data;
         }
@@ -53,11 +50,11 @@ namespace WinterWorkShop.Cinema.Repositories
         {
             var seats = _cinemaContext.Seats.Where(x => x.AuditoriumId.Equals((int)id)).ToList();
             List<Reservation> reservations = new List<Reservation>();
-            foreach(var item in seats)
+            foreach (var item in seats)
             {
                 item.Reservations = new List<Reservation>();
                 var reservation = _cinemaContext.Reservations.Where(x => x.seatId.Equals(item.Id)).ToList();
-                foreach(var res in reservation)
+                foreach (var res in reservation)
                 {
                     reservations.Add(res);
                     item.Reservations.Add(res);

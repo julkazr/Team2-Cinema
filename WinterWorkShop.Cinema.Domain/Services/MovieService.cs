@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
+using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
-using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Repositories;
-using System.Linq;
-using System.Text.RegularExpressions;
-using WinterWorkShop.Cinema.Data.Entities;
 
 namespace WinterWorkShop.Cinema.Domain.Services
 {
@@ -135,7 +132,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return domainModel;
         }
 
-        public async Task<UpdateMovieResultModel> UpdateMovie(MovieDomainModel updateMovie) {
+        public async Task<UpdateMovieResultModel> UpdateMovie(MovieDomainModel updateMovie)
+        {
 
             var movieBeforeUpdate = await _moviesRepository.GetByIdAsync(updateMovie.Id);
             var projectionsForMovie = _projectionsRepository.GetByMovieId(updateMovie.Id);
@@ -222,7 +220,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 Rating = data.Rating ?? 0
 
             };
-            
+
             return domainModel;
         }
         //*************************************************************************************
@@ -288,11 +286,11 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             int len = topTenResults.Count;
 
-            for(int i = 0; i < len; i ++)
+            for (int i = 0; i < len; i++)
             {
-                for(int j = i + 1; j < len; j ++)
+                for (int j = i + 1; j < len; j++)
                 {
-                    if(topTenResults[i].Rating == topTenResults[j].Rating && topTenResults[j].Oscar && !topTenResults[i].Oscar)
+                    if (topTenResults[i].Rating == topTenResults[j].Rating && topTenResults[j].Oscar && !topTenResults[i].Oscar)
                     {
                         var s = topTenResults[i];
                         topTenResults[i] = topTenResults[j];
@@ -313,16 +311,16 @@ namespace WinterWorkShop.Cinema.Domain.Services
         {
             var data = await _moviesRepository.GetMoviesWithTheirProjections();
 
-            if(data == null)
+            if (data == null)
             {
                 return null;
             }
-            
+
             List<MovieProjectionsResultModel> result = new List<MovieProjectionsResultModel>();
             MovieProjectionsResultModel model;
 
             foreach (var item in data)
-            {                
+            {
                 List<Projection> listOfProjectionsForWantedAuditorium = item.Projections.Where(p => (p.AuditoriumId == auditoriumId) && (p.MovieId == item.Id)).ToList();
 
                 List<ProjectionDomainModel> projsList = new List<ProjectionDomainModel>();
@@ -343,8 +341,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
                         };
 
                         projsList.Add(projMod);
-                    }                
-                }                
+                    }
+                }
 
                 model = new MovieProjectionsResultModel
                 {
@@ -357,8 +355,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
                         Current = item.Current
                     },
                     Projections = projsList,
-                    IsSuccessful=true,
-                    ErrorMessage=null
+                    IsSuccessful = true,
+                    ErrorMessage = null
                 };
 
                 result.Add(model);
@@ -374,7 +372,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 }
             }
 
-            
+
             return resList;
         }
 

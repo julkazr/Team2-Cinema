@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Common;
@@ -101,7 +100,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             return result;
         }
-        
+
         public async Task<IEnumerable<ProjectionDomainModel>> FilterProjections(FilterProjectionDomainModel filterProjectionDomainModel)
         {
             var allProjections = await _projectionsRepository.GetAll();
@@ -125,7 +124,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 allProjections = tempProjections;
             }
             //By Movie
-            if(filterProjectionDomainModel.movieId != null)
+            if (filterProjectionDomainModel.movieId != null)
             {
                 var tempProjections = allProjections.Where(x => x.MovieId == filterProjectionDomainModel.movieId);
                 allProjections = tempProjections;
@@ -191,7 +190,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 _reservationRepository.Save();
             }
 
-            
+
             //da li moze save nakon svih
 
 
@@ -218,9 +217,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
         public async Task<ProjectionDomainModel> GetByIdAsync(Guid id)
         {
-            //var data = await _projectionsRepository.GetByIdAsync(id);
             var data = await _projectionsRepository.GetByIdAsyncView(id);
-            //view
 
             if (data == null)
             {
@@ -273,7 +270,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
         public async Task<ProjectionWithAuditoriumResultModel> GetProjectionWithAuditorium(Guid id)
         {
             var projectionWithAuditorium = await _projectionsRepository.GetByIdWithAuditoriumIncluded(id);
-            if(projectionWithAuditorium == null)
+            if (projectionWithAuditorium == null)
             {
                 return null;
             }
@@ -306,12 +303,10 @@ namespace WinterWorkShop.Cinema.Domain.Services
                     Row = seat.Row
                 };
                 seats.Add(seatForAuditorium);
-            } 
+            }
 
             ProjectionWithAuditoriumResultModel projModel = new ProjectionWithAuditoriumResultModel
             {
-                //IsSuccessful = true,
-                //ErrorMessage = null,
                 Projection = new ProjectionDomainModel
                 {
                     Id = projectionWithAuditorium.Id,
@@ -342,7 +337,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
         public async Task<IEnumerable<SeatDomainModel>> GetReserverdSeetsForProjection(Guid projectionId)
         {
             List<SeatDomainModel> listOfReservedSeats = new List<SeatDomainModel>();
-            //_reservationRepository
 
             var data = await _projectionsRepository.GetByIdWithReservationsAsync(projectionId);
 
