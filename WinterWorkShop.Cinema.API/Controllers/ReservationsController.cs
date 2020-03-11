@@ -111,8 +111,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
         //****************************************************************************************
         //RESERVATION PROCES
-
-        [Authorize(Roles = "admin")]
+        
         [HttpPost]
         [Route("reserve")]
         public async Task<ActionResult<ReservationDomainModel>> ReservationProces(ReservationProcesModel model)
@@ -200,7 +199,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
         //CHECK FOR SEEAT POSITIONS BEFORE RESERVATION
 
-        [Authorize(Roles = "admin")]
+        //[Authorize(Roles = "admin")]
         [HttpPost]
         [Route("check")]
         public async Task<ActionResult<CheckSeatsPositionDomainModel>> CheckSeatPositions(CheckSeetPositionsModel model)
