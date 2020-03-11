@@ -41,8 +41,10 @@ namespace WinterWorkShop.Cinema.Tests.Services
                 Seat = seat,
                 seatId = seat.Id
             };
-            List<Reservation> reservations = new List<Reservation>();
-            reservations.Add(reservation);
+            List<Reservation> reservations = new List<Reservation>
+            {
+                reservation
+            };
 
             _filterProjectionDomainModel = new FilterProjectionDomainModel
             {
@@ -90,8 +92,10 @@ namespace WinterWorkShop.Cinema.Tests.Services
                 AuditoriumId = 1
             };
 
-            List<SeatDomainModel> seats = new List<SeatDomainModel>();
-            seats.Add(_seatDomainModel);
+            List<SeatDomainModel> seats = new List<SeatDomainModel>
+            {
+                _seatDomainModel
+            };
 
             _projectionWithAuditoriumResultModel = new ProjectionWithAuditoriumResultModel
             {
@@ -117,9 +121,10 @@ namespace WinterWorkShop.Cinema.Tests.Services
                 }
             };
 
-            List<Projection> projectionsModelsList = new List<Projection>();
-
-            projectionsModelsList.Add(_projection);
+            List<Projection> projectionsModelsList = new List<Projection>
+            {
+                _projection
+            };
             IEnumerable<Projection> projections = projectionsModelsList;
             Task<IEnumerable<Projection>> responseTask = Task.FromResult(projections);
 
@@ -173,8 +178,10 @@ namespace WinterWorkShop.Cinema.Tests.Services
         public void ProjectionService_CreateProjection_WithProjectionAtSameTime_ReturnErrorMessage()
         {
             //Arrange
-            List<Projection> projectionsModelsList = new List<Projection>();
-            projectionsModelsList.Add(_projection);
+            List<Projection> projectionsModelsList = new List<Projection>
+            {
+                _projection
+            };
             string expectedMessage = "Cannot create new projection, there are projections at same time alredy.";
 
             _mockProjectionsRepository = new Mock<IProjectionsRepository>();
@@ -307,7 +314,6 @@ namespace WinterWorkShop.Cinema.Tests.Services
         public void ProjectionService_FiletProjections_ReturnNull()
         {
             //Assert
-            int expectedCount = 0;
             IEnumerable<Projection> projections = null;
             Task<IEnumerable<Projection>> responseTask = Task.FromResult(projections);
 
@@ -552,8 +558,10 @@ namespace WinterWorkShop.Cinema.Tests.Services
                 AuditoriumId = 1
             };
 
-            List<Seat> seats = new List<Seat>();
-            seats.Add(seat);
+            List<Seat> seats = new List<Seat>
+            {
+                seat
+            };
             _projection = new Projection
             {
                 Id = Guid.NewGuid(),

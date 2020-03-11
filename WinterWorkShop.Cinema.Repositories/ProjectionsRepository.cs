@@ -19,7 +19,7 @@ namespace WinterWorkShop.Cinema.Repositories
 
     public class ProjectionsRepository : IProjectionsRepository
     {
-        private CinemaContext _cinemaContext;
+        private readonly CinemaContext _cinemaContext;
 
         public ProjectionsRepository(CinemaContext cinemaContext)
         {
