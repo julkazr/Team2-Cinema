@@ -2,7 +2,6 @@
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Models;
@@ -51,7 +50,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
                 LastName = "Peric",
                 UserName = "Perr",
                 IsAdmin = true
-            };            
+            };
             userModelList.Add(user);
 
             IEnumerable<User> list = userModelList;
@@ -185,5 +184,62 @@ namespace WinterWorkShop.Cinema.Tests.Services
         }
 
 
+        [TestMethod]
+        public void UserService_IncreaseBonus_ReturnUser()
+        {
+            //Arrange
+
+            Guid guId = Guid.NewGuid();
+            User user = new User
+            {
+                Id = guId,
+                FirstName = "Pera",
+                LastName = "Peric",
+                UserName = "Perr",
+                IsAdmin = true,
+                IsSuperUser = false,
+                bonus = 0
+            };
+
+            Task<User> responseTask = Task.FromResult(user);
+            user.bonus++;
+
+            _mockUserRepository = new Mock<IUsersRepository>();
+            _mockUserRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).Returns(responseTask);
+            _mockUserRepository.Setup(x => x.Update(It.IsAny<User>())).Returns(user);
+            UserService usersService = new UserService(_mockUserRepository.Object);
+
+            //Act
+            var resultAction = usersService.IncreaseBonus(guId).ConfigureAwait(false).GetAwaiter().GetResult();
+            var domainModel = (UserDomainModel)resultAction;
+
+            //Assert
+            Assert.IsNotNull(domainModel);
+            Assert.AreEqual(guId, domainModel.Id);
+            Assert.AreEqual(user.bonus, domainModel.bonus);
+            Assert.IsInstanceOfType(domainModel, typeof(UserDomainModel));
+        }
+
+        [TestMethod]
+        public void UserService_IncreaseBonus_ReturnNull()
+        {
+            //Arrange
+            Guid guID = Guid.NewGuid();
+            User user = null;
+
+            Task<User> responseTask = Task.FromResult(user);
+
+            _mockUserRepository = new Mock<IUsersRepository>();
+            _mockUserRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).Returns(responseTask);
+            UserService usersService = new UserService(_mockUserRepository.Object);
+
+            //Act
+            var resultAction = usersService.IncreaseBonus(guID).ConfigureAwait(false).GetAwaiter().GetResult();
+            var domainModel = (UserDomainModel)resultAction;
+
+            //Assert
+            Assert.IsNull(domainModel);
+
+        }
     }
 }

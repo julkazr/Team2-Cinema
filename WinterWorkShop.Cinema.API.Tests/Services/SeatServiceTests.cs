@@ -2,7 +2,6 @@
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Models;
@@ -13,7 +12,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
 {
     [TestClass]
     public class SeatServiceTests
-    { 
+    {
         private Mock<ISeatsRepository> _seatsRepository;
         private Seat _seat;
         private List<Seat> _seats;

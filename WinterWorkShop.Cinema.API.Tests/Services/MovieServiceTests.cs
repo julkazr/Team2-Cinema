@@ -3,7 +3,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Data.Entities;
@@ -174,7 +173,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
             //Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(id, result.Id);
-            Assert.IsInstanceOfType(result, typeof(MovieDomainModel));        
+            Assert.IsInstanceOfType(result, typeof(MovieDomainModel));
         }
 
         [TestMethod]
@@ -246,6 +245,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
             //Arrange
             bool expectedIsSuccessful = true;
             _moviesRepository.Setup(x => x.Update(It.IsAny<Movie>())).Returns(_movie);
+            _moviesRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_movie));
             MovieService movieService = new MovieService(_moviesRepository.Object, _projectionsRepository.Object, _tagRepository.Object);
 
             //Act
@@ -268,11 +268,13 @@ namespace WinterWorkShop.Cinema.Tests.Services
                 DateTime = DateTime.Now.AddDays(1)
             };
             List<Projection> projections = new List<Projection>();
+            _movieDomainModel.Current = !_movie.Current;
             projections.Add(projection);
             string expectedMessage = Messages.PROJECTION_EXISTING_FOR_MOVIE_ERROR;
             bool expectedIsSuccessful = false;
             _projectionsRepository = new Mock<IProjectionsRepository>();
             _projectionsRepository.Setup(x => x.GetByMovieId(It.IsAny<Guid>())).Returns(projections);
+            _moviesRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_movie));
             _moviesRepository.Setup(x => x.Update(It.IsAny<Movie>())).Returns(_movie);
             MovieService movieService = new MovieService(_moviesRepository.Object, _projectionsRepository.Object, _tagRepository.Object);
 
@@ -400,6 +402,44 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
             //Act
             var actionResult = movieService.GetTopMoviesAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            var result = (List<MovieDomainModel>)actionResult;
+
+            //Assert
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void MovieService_GetTopmoviesWithYear_ReturnTopMovies()
+        {
+            //Arrange
+            int expectedCount = 1;
+            int year = 2020;
+            _moviesRepository.Setup(x => x.GetAll()).Returns(responseTask);
+            MovieService movieService = new MovieService(_moviesRepository.Object, _projectionsRepository.Object, _tagRepository.Object);
+
+            //Act
+            var actionResult = movieService.GetTopMoviesAsync(year).ConfigureAwait(false).GetAwaiter().GetResult();
+            var result = (List<MovieDomainModel>)actionResult;
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expectedCount, result.Count);
+            Assert.AreEqual(_movie.Id, result[0].Id);
+            Assert.IsInstanceOfType(result[0], typeof(MovieDomainModel));
+        }
+
+        [TestMethod]
+        public void MovieService_GetTopmoviesWithYear_ReturnNull()
+        {
+            //Arrange
+            int year = 2020;
+            movies = null;
+            responseTask = Task.FromResult(movies);
+            _moviesRepository.Setup(x => x.GetAll()).Returns(responseTask);
+            MovieService movieService = new MovieService(_moviesRepository.Object, _projectionsRepository.Object, _tagRepository.Object);
+
+            //Act
+            var actionResult = movieService.GetTopMoviesAsync(year).ConfigureAwait(false).GetAwaiter().GetResult();
             var result = (List<MovieDomainModel>)actionResult;
 
             //Assert

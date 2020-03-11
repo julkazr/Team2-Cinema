@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Data.Entities;
@@ -27,7 +26,7 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public async Task<IEnumerable<Tag>> GetAll()
         {
-            var data = await _cinemaContext.Tags.Include(x=>x.TagMovies).ToListAsync();
+            var data = await _cinemaContext.Tags.Include(x => x.TagMovies).ToListAsync();
 
             return data;
         }

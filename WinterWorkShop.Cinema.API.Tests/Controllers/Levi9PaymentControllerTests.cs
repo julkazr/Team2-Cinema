@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.API.Controllers;
 using WinterWorkShop.Cinema.API.Models;
@@ -33,7 +30,8 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
                 Message = paymentResponse.Message
             };
             _paymentService = new Mock<ILevi9PaymentService>();
-            _paymentService.Setup(x => x.MakePayment()).Returns(Task.Run(() => {
+            _paymentService.Setup(x => x.MakePayment()).Returns(Task.Run(() =>
+            {
                 return paymentResponse;
             }));
             int expectedStatusCode = 200;
@@ -71,7 +69,8 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
                 Message = paymentResponse.Message
             };
             _paymentService = new Mock<ILevi9PaymentService>();
-            _paymentService.Setup(x => x.MakePayment()).Returns(Task.Run(() => {
+            _paymentService.Setup(x => x.MakePayment()).Returns(Task.Run(() =>
+            {
                 return paymentResponse;
             }));
             int expectedStatusCode = 400;
@@ -115,7 +114,8 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             };
 
             _paymentService = new Mock<ILevi9PaymentService>();
-            _paymentService.Setup(x => x.MakePayment()).Returns(Task.Run(() => {
+            _paymentService.Setup(x => x.MakePayment()).Returns(Task.Run(() =>
+            {
                 return paymentResponse;
             }));
             int expectedStatusCode = 400;

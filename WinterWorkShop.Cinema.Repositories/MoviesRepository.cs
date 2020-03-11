@@ -1,15 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
 
 namespace WinterWorkShop.Cinema.Repositories
 {
-    public interface IMoviesRepository : IRepository<Movie> 
+    public interface IMoviesRepository : IRepository<Movie>
     {
         IEnumerable<Movie> GetCurrentMovies();
         Task<IEnumerable<Movie>> GetMoviesWithTheirProjections();
@@ -40,7 +37,7 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public async Task<IEnumerable<Movie>> GetAll()
         {
-            return await _cinemaContext.Movies.ToListAsync(); 
+            return await _cinemaContext.Movies.ToListAsync();
         }
 
         public async Task<Movie> GetByIdAsync(object id)
@@ -53,7 +50,7 @@ namespace WinterWorkShop.Cinema.Repositories
         public IEnumerable<Movie> GetCurrentMovies()
         {
             var data = _cinemaContext.Movies
-                .Where(x => x.Current);            
+                .Where(x => x.Current);
 
             return data;
         }

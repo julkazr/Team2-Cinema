@@ -116,6 +116,60 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
         }
 
         [TestMethod]
+        public void GetById_Return_Movie()
+        {
+            //Arrange
+            MovieDomainModel movieDomainModel = new MovieDomainModel
+            {
+                Id = Guid.NewGuid(),
+                Current = true,
+                Rating = 1,
+                Title = "ImeFilma",
+                Year = 2020
+            };
+            Task<MovieDomainModel> responseTask = Task.FromResult(movieDomainModel);
+            int expectedStatusCode = 200;
+
+            _moviesService = new Mock<IMovieService>();
+            _moviesService.Setup(x => x.GetMovieByIdAsync(It.IsAny<Guid>())).Returns(responseTask);
+            MoviesController moviesController = new MoviesController(_moviesService.Object);
+
+            //Act
+            var result = moviesController.GetAsync(movieDomainModel.Id).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var resultList = ((OkObjectResult)result).Value;
+            var movieDomainModelResultList = (MovieDomainModel)resultList;
+
+            //Assert
+            Assert.IsNotNull(movieDomainModelResultList);
+            Assert.AreEqual(movieDomainModel.Id, movieDomainModelResultList.Id);
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
+        }
+
+        [TestMethod]
+        public void GetById_Return_NotFound()
+        {
+            //Arrange
+            Task<MovieDomainModel> responseTask = Task.FromResult((MovieDomainModel)null);
+            int expectedStatusCode = 404;
+            var expectedMessage = Messages.MOVIE_DOES_NOT_EXIST;
+
+            _moviesService = new Mock<IMovieService>();
+            _moviesService.Setup(x => x.GetMovieByIdAsync(It.IsAny<Guid>())).Returns(responseTask);
+            MoviesController moviesController = new MoviesController(_moviesService.Object);
+
+            //Act
+            var result = moviesController.GetAsync(Guid.NewGuid()).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var resultList = ((ObjectResult)result).Value;
+
+            //Assert
+            Assert.IsNotNull(resultList);
+            Assert.AreEqual(expectedMessage, resultList);
+            Assert.IsInstanceOfType(result, typeof(ObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((ObjectResult)result).StatusCode);
+        }
+
+        [TestMethod]
         public void GetAllAsync_Return_NewList()
         {
             //Arrange
@@ -819,6 +873,68 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.IsInstanceOfType(result, typeof(ObjectResult));
             Assert.AreEqual(expectedStatusCode, ((ObjectResult)result).StatusCode);
 
+        }
+
+        [TestMethod]
+        public void GetTopsByYear_Get_Return_Ok()
+        {
+            //Arrange
+            int expectedResultCount = 1;
+            int expectedStatusCode = 200;
+            MovieDomainModel movieDomainModel = new MovieDomainModel
+            {
+                Current = true,
+                Id = Guid.NewGuid(),
+                Rating = 1,
+                Title = "Title",
+                Year = 2020
+            };
+            List<MovieDomainModel> movieDomainModels = new List<MovieDomainModel>();
+            movieDomainModels.Add(movieDomainModel);
+            IEnumerable<MovieDomainModel> movieDomains = movieDomainModels;
+            Task<IEnumerable<MovieDomainModel>> responseTask = Task.FromResult(movieDomains);
+
+            _moviesService = new Mock<IMovieService>();
+            _moviesService.Setup(x => x.GetTopMoviesAsync(It.IsAny<int>())).Returns(responseTask);
+            MoviesController moviesController = new MoviesController(_moviesService.Object);
+
+            //Act
+            var result = moviesController.GetTops(movieDomainModel.Year).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var resultList = ((OkObjectResult)result).Value;
+            var movieDomainModelResultList = (List<MovieDomainModel>)resultList;
+
+            //Assert
+            Assert.IsNotNull(movieDomainModelResultList);
+            Assert.AreEqual(expectedResultCount, movieDomainModelResultList.Count);
+            Assert.AreEqual(movieDomainModel.Id, movieDomainModelResultList[0].Id);
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
+        }
+
+        [TestMethod]
+        public void GetTopsByYear_ReturnNull_Return_BadRequest()
+        {
+            //Arrange
+            int expectedResultCount = 0;
+            int expectedStatusCode = 400;
+            List<MovieDomainModel> movieDomainModels = null;
+            IEnumerable<MovieDomainModel> movieDomains = movieDomainModels;
+            Task<IEnumerable<MovieDomainModel>> responseTask = Task.FromResult(movieDomains);
+
+            _moviesService = new Mock<IMovieService>();
+            _moviesService.Setup(x => x.GetTopMoviesAsync(It.IsAny<int>())).Returns(responseTask);
+            MoviesController moviesController = new MoviesController(_moviesService.Object);
+
+            //Act
+            var result = moviesController.GetTops(2020).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var resultList = ((ObjectResult)result).Value;
+            var movieDomainModelResultList = (List<MovieDomainModel>)resultList;
+
+            //Assert
+            Assert.IsNotNull(movieDomainModelResultList);
+            Assert.AreEqual(expectedResultCount, movieDomainModelResultList.Count);
+            Assert.IsInstanceOfType(result, typeof(ObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((ObjectResult)result).StatusCode);
         }
     }
 }

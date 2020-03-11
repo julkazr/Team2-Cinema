@@ -1,15 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
 
 namespace WinterWorkShop.Cinema.Repositories
 {
-    public interface ICinemasRepository : IRepository<Data.Cinema> {
+    public interface ICinemasRepository : IRepository<Data.Cinema>
+    {
         Data.Cinema DeleteCinemaComplete(int id);
     }
 
@@ -48,7 +46,7 @@ namespace WinterWorkShop.Cinema.Repositories
             var result = _cinemaContext.Cinemas.Remove(existing);
 
             return result.Entity;
-        }        
+        }
 
         public async Task<Data.Cinema> GetByIdAsync(object id)
         {

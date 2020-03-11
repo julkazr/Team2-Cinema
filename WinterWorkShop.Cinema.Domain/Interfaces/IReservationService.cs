@@ -20,6 +20,5 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
         Task<CheckReservationForSeatsDomainModel> CheckReservationForSeats(List<Guid> listOfSeatsId);
         Task<CheckReservationForSeatsDomainModel> CheckReservationForSeatsForProjection(List<Guid> listOfSeatsId, Guid projectionId);
         Task<CheckSeatsPositionDomainModel> CheckPositionBeforeReservation(List<Guid> listOfSeatsId);
-        //object CheckPositionBeforeReservation();
     }
 }

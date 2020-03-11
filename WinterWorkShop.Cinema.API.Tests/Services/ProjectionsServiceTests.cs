@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Data.Entities;
@@ -94,7 +90,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
                 AuditoriumId = 1
             };
 
-            List < SeatDomainModel > seats = new List<SeatDomainModel>();
+            List<SeatDomainModel> seats = new List<SeatDomainModel>();
             seats.Add(_seatDomainModel);
 
             _projectionWithAuditoriumResultModel = new ProjectionWithAuditoriumResultModel
@@ -346,7 +342,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(id, result.Id);            
+            Assert.AreEqual(id, result.Id);
         }
 
         [TestMethod]

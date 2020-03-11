@@ -1,15 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
 
 namespace WinterWorkShop.Cinema.Repositories
 {
-    public interface IProjectionsRepository : IRepository<Projection> 
+    public interface IProjectionsRepository : IRepository<Projection>
     {
         IEnumerable<Projection> GetByAuditoriumId(int salaId);
         IEnumerable<Projection> GetByMovieId(Guid movieId);
@@ -39,8 +37,8 @@ namespace WinterWorkShop.Cinema.Repositories
         public async Task<IEnumerable<Projection>> GetAll()
         {
             var data = await _cinemaContext.Projections.Include(x => x.Movie).Include(x => x.Auditorium).ToListAsync();
-            
-            return data;           
+
+            return data;
         }
 
         public async Task<Projection> GetByIdAsync(object id)
@@ -56,7 +54,7 @@ namespace WinterWorkShop.Cinema.Repositories
         //Metod ispod ima istu funkciju kao metod iznad, samo sto koristi kreiran view (performance task)
         public async Task<Projection> GetByIdAsyncView(object id)
         {
-            var projections =  _cinemaContext.ProjectionsWithMovieAndAuditoriums.ToList();
+            var projections = _cinemaContext.ProjectionsWithMovieAndAuditoriums.ToList();
             var filteredProjeciton = projections.Where(x => x.Id.Equals(id)).First();
 
             Auditorium auditorium = new Auditorium

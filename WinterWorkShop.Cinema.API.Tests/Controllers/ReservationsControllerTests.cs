@@ -4,7 +4,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.API.Controllers;
 using WinterWorkShop.Cinema.API.Models;
@@ -84,7 +83,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             {
                 IsSuccess = true
             };
-            Task<PaymentResponse> responsePayment = Task.FromResult(paymentResponse); 
+            Task<PaymentResponse> responsePayment = Task.FromResult(paymentResponse);
 
             _reservationService = new Mock<IReservationService>();
             _levi9PaymentService = new Mock<ILevi9PaymentService>();
@@ -109,7 +108,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             //Act
             var actionResult = reservationsController.getAsync().ConfigureAwait(false).GetAwaiter().GetResult().Result;
             var resultList = ((OkObjectResult)actionResult).Value;
-            var result = (List< ReservationDomainModel>)resultList;
+            var result = (List<ReservationDomainModel>)resultList;
 
             //Assert
             Assert.IsNotNull(result);

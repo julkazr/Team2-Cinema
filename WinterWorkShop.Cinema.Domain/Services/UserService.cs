@@ -122,7 +122,5 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             return domainModel;
         }
-
-
     }
 }
