@@ -55,6 +55,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("current")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Movie>>> GetAsync()
         {
             IEnumerable<MovieDomainModel> movieDomainModels;
@@ -74,6 +75,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         [Route("all")]
         public async Task<ActionResult<IEnumerable<Movie>>> GetAllAsync()
         {
@@ -95,6 +97,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <param name="auditoriumId"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         [Route("movieprojections/{auditoriumId}")]
 
         public async Task<ActionResult<IEnumerable<Movie>>> GetMoviesWithTheirProjectionsAsync(int auditoriumId)
@@ -283,6 +286,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         [Route("tops")]
         public async Task<ActionResult<IEnumerable<Movie>>> GetTops()
         {
@@ -299,6 +303,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("tops/{year}")]
         public async Task<ActionResult<IEnumerable<Movie>>> GetTops(int year)
         {
@@ -315,6 +320,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("getByTag/{tag}")]
         public async Task<ActionResult<IEnumerable<Movie>>> GetByTAg(string tag)
         {

@@ -111,6 +111,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <param name="cinemaId"></param>
         /// <returns></returns>
         [HttpPost]
+        [AllowAnonymous]
         [Route("filter")]
         public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> GetFilteredProjections(FilterProjectionModel filterProjectionModel)
         {
