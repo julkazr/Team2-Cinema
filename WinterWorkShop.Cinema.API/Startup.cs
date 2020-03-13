@@ -1,16 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using WinterWorkShop.Cinema.API.TokenServiceExtensions;
 using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Interfaces;
@@ -43,7 +36,7 @@ namespace WinterWorkShop.Cinema.API
 
             services.AddControllers();
 
-            services.AddOpenApi();            
+            services.AddOpenApi();
 
             // Repositories
             services.AddTransient<IMoviesRepository, MoviesRepository>();
@@ -66,7 +59,8 @@ namespace WinterWorkShop.Cinema.API
             services.AddTransient<IReservationService, ReservationService>();
 
             // Allow Cors for client app
-            services.AddCors(options => {
+            services.AddCors(options =>
+            {
                 options.AddPolicy("CorsPolicy",
                     corsBuilder => corsBuilder.WithOrigins("http://localhost:3000")
                         .AllowAnyMethod()
@@ -84,7 +78,7 @@ namespace WinterWorkShop.Cinema.API
             }
 
             app.UseHttpsRedirection();
-            
+
             app.UseRouting();
 
             app.UseAuthentication();

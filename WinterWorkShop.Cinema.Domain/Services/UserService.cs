@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
@@ -92,7 +91,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return domainModel;
         }
 
-        public async Task<UserDomainModel> IncreaseBonus(Guid id, int bonusIncrease=1)
+        public async Task<UserDomainModel> IncreaseBonus(Guid id, int bonusIncrease = 1)
         {
             var data = await _usersRepository.GetByIdAsync(id);
 
@@ -101,13 +100,13 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 return null;
             }
 
-            if(data.bonus == null)
+            if (data.bonus == null)
             {
                 data.bonus = 0;
             }
 
             data.bonus += bonusIncrease;
-            var userAfterUpdate =  _usersRepository.Update(data);
+            var userAfterUpdate = _usersRepository.Update(data);
 
             UserDomainModel domainModel = new UserDomainModel
             {

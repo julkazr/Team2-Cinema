@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NSwag.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.API.Models;
 using WinterWorkShop.Cinema.API.TokenServiceExtensions;
@@ -14,7 +10,7 @@ using WinterWorkShop.Cinema.Domain.Interfaces;
 namespace WinterWorkShop.Cinema.API.Controllers
 {
     [OpenApiIgnore]
-    public class DemoAuthenticationController : ControllerBase    
+    public class DemoAuthenticationController : ControllerBase
     {
         private readonly IConfiguration _configuration;
         private readonly IUserService _userService;
@@ -51,7 +47,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
             var jwt = JwtTokenGenerator
                 .Generate(name, admin, superUser, _configuration["Tokens:Issuer"], _configuration["Tokens:Key"]);
 
-            return Ok(new {token = jwt});
+            return Ok(new { token = jwt });
         }
     }
 }

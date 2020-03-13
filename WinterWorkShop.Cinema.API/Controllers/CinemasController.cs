@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.API.Models;
 using WinterWorkShop.Cinema.Domain.Common;
@@ -69,7 +66,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         [Route("create")]
         public async Task<ActionResult> Post([FromBody]CinemaModel cinemaModel)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -96,7 +93,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 return BadRequest(errorResponse);
             }
 
-            if(createCinema == null)
+            if (createCinema == null)
             {
                 ErrorResponseModel errorResponse = new ErrorResponseModel
                 {
@@ -211,7 +208,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
             };
 
             CinemaDomainModel createdCinema;
-            AuditoriumDomainModel createAuditorium;
 
             try
             {

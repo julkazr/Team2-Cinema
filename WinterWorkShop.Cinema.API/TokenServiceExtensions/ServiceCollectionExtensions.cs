@@ -1,13 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using System.Threading.Tasks;
 
 namespace WinterWorkShop.Cinema.API.TokenServiceExtensions
 {

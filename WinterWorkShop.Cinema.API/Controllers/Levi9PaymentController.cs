@@ -34,7 +34,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             paymentResult = await _paymentService.MakePayment();
             
-
             if (paymentResult.Message != "Connection error.")
             {
                 PaymentResponseModel model = new PaymentResponseModel

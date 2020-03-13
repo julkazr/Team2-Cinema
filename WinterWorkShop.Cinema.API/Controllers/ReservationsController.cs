@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using WinterWorkShop.Cinema.API.Models;
 using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
@@ -66,7 +64,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         [Route("create")]
         public async Task<ActionResult> Post([FromBody]ReservationModel reservationModel)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -84,7 +82,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
             {
                 createReservation = await _reservationService.AddReservation(domainModel);
             }
-            catch(DbUpdateException e)
+            catch (DbUpdateException e)
             {
                 ErrorResponseModel errorResponse = new ErrorResponseModel
                 {
@@ -95,7 +93,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 return BadRequest(errorResponse);
             }
 
-            if(createReservation == null)
+            if (createReservation == null)
             {
                 ErrorResponseModel errorResponse = new ErrorResponseModel
                 {
@@ -111,11 +109,11 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
         //****************************************************************************************
         //RESERVATION PROCES
-        
+
         [HttpPost]
         [Route("reserve")]
         public async Task<ActionResult<ReservationDomainModel>> ReservationProces(ReservationProcesModel model)
-        {          
+        {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -123,7 +121,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             //provera da li su sedista slobodna
             var reservationCheck = await _reservationService.CheckReservationForSeatsForProjection(model.SeatsToReserveID, model.ProjectionId);
-            if(!reservationCheck.SeatsAreFree)
+            if (!reservationCheck.SeatsAreFree)
             {
                 SeatTakenErrorResponseModel errorResponse = new SeatTakenErrorResponseModel
                 {
@@ -148,7 +146,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
             }//ako je placanje uspesno:
 
             var userAfterBonusChange = await _userService.IncreaseBonus(model.UserId, model.SeatsToReserveID.Count);
-            if(userAfterBonusChange == null)
+            if (userAfterBonusChange == null)
             {
                 ErrorResponseModel errorResponse = new ErrorResponseModel
                 {
@@ -174,10 +172,10 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 try
                 {
                     var data = await _reservationService.AddReservation(reservation);
-                    if(data != null)
+                    if (data != null)
                     {
                         reservation.id = data.id;
-                        
+
                     }
                 }
                 catch (DbUpdateException e)
@@ -199,7 +197,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
         //CHECK FOR SEEAT POSITIONS BEFORE RESERVATION
 
-        //[Authorize(Roles = "admin")]
         [HttpPost]
         [Route("check")]
         public async Task<ActionResult<CheckSeatsPositionDomainModel>> CheckSeatPositions(CheckSeetPositionsModel model)
@@ -221,7 +218,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
 
             CheckSeatsPositionDomainModel data;
-            
+
             data = await _reservationService.CheckPositionBeforeReservation(model.listOfSeatsId);
             if (data == null)
             {
@@ -242,7 +239,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 };
                 return BadRequest(errorResponse);
             }
-            
 
             return Ok(data);
         }

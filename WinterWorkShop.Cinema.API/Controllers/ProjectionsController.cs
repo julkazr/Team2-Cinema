@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using WinterWorkShop.Cinema.API.Models;
 using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
@@ -34,8 +32,8 @@ namespace WinterWorkShop.Cinema.API.Controllers
         public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> GetAsync()
         {
             IEnumerable<ProjectionDomainModel> projectionDomainModels;
-           
-             projectionDomainModels = await _projectionService.GetAllAsync();            
+
+            projectionDomainModels = await _projectionService.GetAllAsync();
 
             if (projectionDomainModels == null)
             {
@@ -98,7 +96,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
                     StatusCode = System.Net.HttpStatusCode.BadRequest
                 };
 
-                return BadRequest(errorResponse);                
+                return BadRequest(errorResponse);
             }
 
             return Created("projections//" + createProjectionResultModel.Projection.Id, createProjectionResultModel.Projection);
@@ -142,7 +140,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         [HttpPut]
         [Route("update/{id}")]
         public async Task<ActionResult> Put(Guid id, UpdateProjectionModel updateProjectionModel)
-        {       
+        {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

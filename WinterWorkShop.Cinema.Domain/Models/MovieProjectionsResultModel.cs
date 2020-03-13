@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace WinterWorkShop.Cinema.Domain.Models
 {
-     public class MovieProjectionsResultModel
+    public class MovieProjectionsResultModel
     {
         public bool IsSuccessful { get; set; }
         public string ErrorMessage { get; set; }

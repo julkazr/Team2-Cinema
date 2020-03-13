@@ -333,9 +333,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                         ProjectionDomainModel projMod = new ProjectionDomainModel
                         {
                             Id = proj.Id,
-                            //AditoriumName = proj.Auditorium.Name,
                             AuditoriumId = proj.AuditoriumId,
-                            //MovieTitle = proj.Movie.Title,
                             MovieId = proj.MovieId,
                             ProjectionTime = proj.DateTime
                         };
